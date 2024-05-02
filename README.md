@@ -37,7 +37,7 @@ This project was created in collaboration with Vero Volley by:
   [Caterina Clapci]
 
 ## License
-The project is released under the [specify the project's license, e.g., MIT License].
+The project is released under the [MIT License].
 
 ---
-Feel free to adjust this readme to fit your project specifics! Let me know if you need further assistance.
+
