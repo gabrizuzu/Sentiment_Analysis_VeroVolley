@@ -31,7 +31,7 @@ This project was developed as part of academic work but is open to future contri
 ## Credits
 This project was created in collaboration with Vero Volley by:  
   [Gabriele Shu](https://github.com/gabrizuzu)
-  [Ingacio Bascunan]
+  [Ignacio Bascunan]
   [Simone Ivagnes]
   [Simone Frazzei]
   [Caterina Clapci]
