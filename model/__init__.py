@@ -26,6 +26,11 @@ from sklearn.model_selection import train_test_split
 
 max_seq_length = 2048
 
+# Models
+model_gemma = {"model": "google/gemma-2b", "name": "Gemma-2B"}
+model_gemma_7b = {"model": "google/gemma-7b", "name": "Gemma-7B"}
+model_llama = {"model": "meta-llama/Meta-Llama-3-8B", "name": "Llama"}
+
 
 def get_model(model_base, model_name):
     tokenizer_model_name = model_base
@@ -90,7 +95,7 @@ def generate_test_prompt(data_point):
             """.strip()
 
 
-def get_training_dataset():
+def get_training_dataset(tokenizer):
     df = load_dataset("SetFit/tweet_sentiment_extraction")
     df = pd.DataFrame(df["train"])
 
@@ -118,8 +123,14 @@ def get_training_dataset():
     )
     X_train = X_train.reset_index(drop=True)
 
-    X_train = pd.DataFrame(X_train.apply(generate_prompt, axis=1), columns=["text"])
-    X_eval = pd.DataFrame(X_eval.apply(generate_prompt, axis=1), columns=["text"])
+    X_train = pd.DataFrame(
+        X_train.apply(lambda x: generate_prompt(x, tokenizer.eos_token), axis=1),
+        columns=["text"],
+    )
+    X_eval = pd.DataFrame(
+        X_eval.apply(lambda x: generate_prompt(x, tokenizer.eos_token), axis=1),
+        columns=["text"],
+    )
 
     y_true = pd.DataFrame(X_test).label_text
     X_test = pd.DataFrame(X_test.apply(generate_test_prompt, axis=1), columns=["text"])
@@ -191,8 +202,19 @@ def predict(X_test, model, tokenizer):
 
 
 def predict_json(filename, model, tokenizer):
-    with open(filename) as f:
-        json_data = json.load(f)
+    try:
+        with open(filename) as f:
+            json_data = json.load(f)
+    except FileNotFoundError:
+        print("File not found. Please check the file path and try again.")
+        return
+
+    folder = ".".join(filename.split(".")[:-1])
+
+    # save input
+    os.makedirs(f"data/{folder}", exist_ok=True)
+    with open(f"data/{folder}/input.json", "w") as f:
+        json.dump(json_data, f, indent=2)
 
     # List to collect all texts
     texts = []
@@ -224,11 +246,11 @@ def predict_json(filename, model, tokenizer):
             print(f"  {comment['sentiment']}: {comment['text']}")
 
     # Save output
-    with open("output.json", "w") as f:
+    with open(f"data/{folder}/output.json", "w") as f:
         json.dump(json_data, f, indent=2)
 
 
-def train(model, tokenizer, train_data, eval_data):
+def train(model, tokenizer, train_data, eval_data, save_folder):
     peft_config = LoraConfig(
         lora_alpha=16,
         lora_dropout=0,
@@ -287,4 +309,4 @@ def train(model, tokenizer, train_data, eval_data):
     trainer.train()
 
     # Save trained model
-    trainer.model.save_pretrained("trained-model")
+    trainer.model.save_pretrained(save_folder)
