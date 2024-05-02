@@ -33,6 +33,19 @@ model_llama = {"model": "meta-llama/Meta-Llama-3-8B", "name": "Llama"}
 
 
 def get_model(model_base, model_name):
+    """Model Initialization
+
+    The model is initialized with specific paramethers for the optimization of the sentiment analysis.
+
+    In specific, we load:
+    - The model with the byte rules.
+    - The tokenizer with the limit of characters to generate.
+    - The End-Of-Sequence Token, to define where to stop the text generation.
+
+    Keyword arguments:
+    model_base -- the name of the base huggingface model
+    imag -- the name of the model used (either base of folder to tuned)
+    """
     tokenizer_model_name = model_base
 
     # Use Pretrained model
@@ -41,7 +54,6 @@ def get_model(model_base, model_name):
     tokenizer = AutoTokenizer.from_pretrained(
         tokenizer_model_name, max_seq_length=max_seq_length
     )
-    EOS_TOKEN = tokenizer.eos_token
 
     compute_dtype = getattr(torch, "float16")
 
