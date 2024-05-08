@@ -14,9 +14,9 @@ def save_data(data, file_path):
 def keyword_in_text(data, keywords):
     items_with_keywords = []
     for item in data:
-        caption = item.get('caption')
-        if caption is not None:
-            content = caption.lower()
+        content = item.get('content')
+        if content is not None:
+            content = content.lower()
         else:
             content = None
         item_keywords = []
@@ -82,7 +82,7 @@ def main():
 
                 comments = item['comments']
                 cleaned_post = {
-                    'caption': item['caption'],
+                    'content': item['caption'],
                     'taken_at_date': item['posted_at'],
                     'comments_count': item['comments_count'],
                     'likes_count': item['likes_count'],
@@ -98,16 +98,15 @@ def main():
                 total_comments = 0
                 for item in cleaned_data:
                     total_comments += item['comments_count']
-                print(f"Total comments in {file_name}: {total_comments}")
                 writer.writerow([file_name, len(cleaned_data), total_comments])
             else:
                 filtered_data = keyword_in_text(cleaned_data, keywords)
                 save_data(filtered_data, output_path)
                 print(f"Number of posts in {file_name}: {len(filtered_data)}")
                 total_comments = 0
-                for item in cleaned_data:
+                for item in filtered_data:
                     total_comments += item['comments_count']
-                writer.writerow([file_name, len(filtered_data), total_comments])
+                writer.writerow([file_name, len(filtered_data),total_comments])
 
             
 
