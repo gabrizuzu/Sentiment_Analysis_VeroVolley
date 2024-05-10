@@ -4,7 +4,7 @@ import os
 import csv
 
 def load_data(file_path):
-    with open(file_path, 'r') as f:
+    with open(file_path, 'r', encoding='ISO-8859-1') as f:
         return json.load(f)
 
 def save_data(data, file_path):
