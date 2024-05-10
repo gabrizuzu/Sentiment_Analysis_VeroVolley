@@ -13,6 +13,8 @@ def save_data(data, file_path):
             for comment in item['comments']:
                 if 'body' in comment:
                     comment['text'] = comment.pop('body')
+    
+
     with open(file_path, 'w') as f:
         json.dump(data, f, indent=4)
 
