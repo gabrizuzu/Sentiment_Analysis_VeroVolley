@@ -1,6 +1,6 @@
-i filtri sono divisi per fonti (FB, IG e WEB)
-ogni cartella ha una cartella data che contiene i json non elaborati e una cartella output contenente sia un file csv con i dati che i json filtrati
+1. i filtri sono divisi per fonti (FB, IG e WEB)
+2. ogni cartella ha una cartella data che contiene i json non elaborati e una cartella output contenente sia un file csv con i dati che i json filtrati
+3. nella cartella model_output è contenuto un unico file contenente tutti i json aggregati, per ogni post e per ogni commento è assegnato un sentiment (positive, negative e neutral) dal nostro modello
 
-l'idea poi è quella che in queste stesse cartelle, diamo in input la cartella contente i json filtrati al modello che poi assegnerà un sentiment, dopodichè verrano estratti ed elaborati degli insight 
 Attenzione: i profili di verovolley e degli atleti di verovolley dovranno essere rinominati nel seguente modo: "verovolley_nomefile"
 ad esempio: "paola_egonu_comments" --> "verovolley_paola_egonu_comments" (serve poi nel filtro)
