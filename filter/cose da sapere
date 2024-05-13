@@ -1,6 +1,6 @@
 1. i filtri sono divisi per fonti (FB, IG e WEB)
 2. ogni cartella ha una cartella data che contiene i json non elaborati e una cartella output contenente sia un file csv con i dati che i json filtrati
 3. nella cartella model_output è contenuto un unico file contenente tutti i json aggregati, per ogni post e per ogni commento è assegnato un sentiment (positive, negative e neutral) dal nostro modello
-
+4. il programma stats.py con unica runnare crea tutti i file
 Attenzione: i profili di verovolley e degli atleti di verovolley dovranno essere rinominati nel seguente modo: "verovolley_nomefile"
 ad esempio: "paola_egonu_comments" --> "verovolley_paola_egonu_comments" (serve poi nel filtro)
