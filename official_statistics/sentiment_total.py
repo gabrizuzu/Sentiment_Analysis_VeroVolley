@@ -353,12 +353,6 @@ def main():
     for platform in platforms:
         counts_posts_specific[platform] = count_sentiment_posts_specific(processed_posts, platform)
 
-    # Statistiche generali
-    for year, count_data in counts_post.items():
-        plot_bar_chart(f'General statistics of posts: positive sentiment - year {year}', count_data['positive'])
-        plot_bar_chart(f'General statistics of posts: negative sentiment - year {year}', count_data['negative'])
-        plot_bar_chart(f'General statistics of posts: neutral sentiment - year {year}', count_data['neutral'])
-    
     #counts_comments = count_sentiment_comments(processed_posts)
     
     # GENERAL STATISTICS
