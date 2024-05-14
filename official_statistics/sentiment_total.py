@@ -4,7 +4,6 @@ import re
 from dateutil import parser
 from datetime import datetime
 import matplotlib.pyplot as plt
-from matplotlib.dates import date2num
 
 # -------------------- LOAD FILE --------------------
 def load_data(file_name):
@@ -363,9 +362,7 @@ def process_post(post):
                 'comments': []
             }
         
-        comments_Web = post.get('comments', [])
-        
-        for comment_Web in comments_Web:
+        for comment_Web in post.get('comments', []):
             data_comm_Web = format_data(comment_Web['created_at_utc'])
             
             comm_Web = {
@@ -384,7 +381,7 @@ def process_post(post):
 # -------------------- MAIN GENERALE --------------------
 
 def main():
-    file_path = '/Users/clapcibus/Downloads/sentiment_total.json'
+    file_path = 'INSERT YOUR FILE PATH'
     data = load_data(file_path)
     
     platforms = ['IG', 'FB', 'Web']
@@ -412,7 +409,6 @@ def main():
     
     
     # ---- PLOT ----
-    
     # Statistiche generali
     # - Post
     for year, count_data in counts_post.items():
@@ -440,7 +436,7 @@ def main():
             plot_bar_chart(f'{platform} statistics of comments: positive sentiment - year {year}', count_data['positive'])
             plot_bar_chart(f'{platform} statistics of comments: negative sentiment - year {year}', count_data['negative'])
             plot_bar_chart(f'{platform} statistics of comments: neutral sentiment - year {year}', count_data['neutral'])
-    
+            
     
 if __name__ == "__main__":
     main()
