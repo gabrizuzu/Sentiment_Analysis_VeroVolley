@@ -85,16 +85,23 @@ def format_data(data):
         data = data.replace(" alle ore ", " ").replace(" alle ", " ")
         return add_year_to_date(data)
 
-    # CASO 3: formato data accettabile (IN TEORIA !!!)
+    # CASO 3: 
     else:
         try:
-            # prova a formattare se realmente la data è in un formato accettabile
-            return parser.parse(data)
+            # data formato "10/6/2022, 15:33"
+            return datetime.strptime(data, "%d/%m/%Y, %H:%M")
         except ValueError:
-            # Se fallisce, prova con il mese scritto nel formato abbrevviato
-            # Esempio:
-            # 5 giu 2023
-            return datetime.strptime(data, '%d %b %Y')
+            try:
+                # data formato "24/1/2024"
+                return datetime.strptime(data, "%d/%m/%Y")
+            except ValueError:
+                try: 
+                    # data formato "5 giu 2023"
+                    return datetime.strptime(data, '%d %b %Y')
+                except ValueError:
+                    # data formato accettabile (SI SPERA.....)
+                    return parser.parse(data)
+                    
 
 # Sentiment statistics
 # GENERAL
@@ -207,15 +214,15 @@ def process_post(post):
         
     #INSTAGRAM 
     if platform == 'IG':
-        data_pubblicazione = format_data(post['taken_at_date'])
+        data_pubblicazione_IG = format_data(post['taken_at_date'])
         
         if 'verovolley' in post['source']:
             postSing = {
                 'platform' : platform,
                 'source': post['source'],
-                'giorno': data_pubblicazione.day,
-                'mese': data_pubblicazione.month,
-                'anno': data_pubblicazione.year,
+                'giorno': data_pubblicazione_IG.day,
+                'mese': data_pubblicazione_IG.month,
+                'anno': data_pubblicazione_IG.year,
                 'sentiment_post': 'none',
                 'nr_like': post['likes_count'],
                 'nr_comment' : post['comments_count'],
@@ -225,9 +232,9 @@ def process_post(post):
             postSing = {
                 'platform' : platform,
                 'source': post['source'],
-                'giorno': data_pubblicazione.day,
-                'mese': data_pubblicazione.month,
-                'anno': data_pubblicazione.year,
+                'giorno': data_pubblicazione_IG.day,
+                'mese': data_pubblicazione_IG.month,
+                'anno': data_pubblicazione_IG.year,
                 'sentiment_post': post['sentiment'],
                 'nr_like': post['likes_count'],
                 'nr_comment' : post['comments_count'],
@@ -235,13 +242,13 @@ def process_post(post):
             }
             
         for comment in post.get('comments', []):
-            data_comm = format_data(comment['created_at_utc'])
+            data_comm_IG = format_data(comment['created_at_utc'])
             
             comm = {
                 'author': comment['username'],
-                'giorno': data_comm.day,
-                'mese': data_comm.month,
-                'anno': data_comm.year,
+                'giorno': data_comm_IG.day,
+                'mese': data_comm_IG.month,
+                'anno': data_comm_IG.year,
                 'sentiment_comment': comment['sentiment'],
                 'nr_like' : comment['like_count']
             }
@@ -251,15 +258,15 @@ def process_post(post):
                 
     #FACEBOOK
     elif platform == 'FB':
-        data_pubblicazione = format_data(post['date'])
+        data_pubblicazione_FB = format_data(post['date'])
 
         if 'verovolley' in post['source']:
             postSing = {
                 'platform' : platform,
                 'source': post['source'],
-                'giorno': data_pubblicazione.day,
-                'mese': data_pubblicazione.month,
-                'anno': data_pubblicazione.year,
+                'giorno': data_pubblicazione_FB.day,
+                'mese': data_pubblicazione_FB.month,
+                'anno': data_pubblicazione_FB.year,
                 'sentiment_post': 'none',
                 'nr_like': post['num_likes'],
                 'nr_comment' : post['num_comments'],
@@ -270,9 +277,9 @@ def process_post(post):
             postSing = {
                 'platform' : platform,
                 'source': post['source'],
-                'giorno': data_pubblicazione.day,
-                'mese': data_pubblicazione.month,
-                'anno': data_pubblicazione.year,
+                'giorno': data_pubblicazione_FB.day,
+                'mese': data_pubblicazione_FB.month,
+                'anno': data_pubblicazione_FB.year,
                 'sentiment_post': post['sentiment'],
                 'nr_like': post['num_likes'],
                 'nr_comment' : post['num_comments'],
@@ -280,13 +287,13 @@ def process_post(post):
             }
         
         for comment in post.get('comments', []):
-            data_comm = format_data(comment['date'])
+            data_comm_FB = format_data(comment['date'])
             
             comm = {
                 'author': comment['author'],
-                'giorno': data_comm.day,
-                'mese': data_comm.month,
-                'anno': data_comm.year,
+                'giorno': data_comm_FB.day,
+                'mese': data_comm_FB.month,
+                'anno': data_comm_FB.year,
                 'sentiment_comment': comment['sentiment'],
                 'nr_like' : comment['likes_num']
             }
@@ -295,15 +302,15 @@ def process_post(post):
     
     #WEB
     elif platform == 'Web':
-        data_pubblicazione = format_data(post['date'])
-        
+        data_pubblicazione_Web = format_data(post['date'])
+  
         if 'verovolley' in post['source']:   
             postSing = {
                 'platform' : platform,
                 'source': post['source'],
-                'giorno': data_pubblicazione.day,
-                'mese': data_pubblicazione.month,
-                'anno': data_pubblicazione.year,
+                'giorno': data_pubblicazione_Web.day,
+                'mese': data_pubblicazione_Web.month,
+                'anno': data_pubblicazione_Web.year,
                 'sentiment_post': 'none',
                 'comments': []
             }
@@ -312,31 +319,29 @@ def process_post(post):
             postSing = {
                 'platform' : platform,
                 'source': post['source'],
-                'giorno': data_pubblicazione.day,
-                'mese': data_pubblicazione.month,
-                'anno': data_pubblicazione.year,
+                'giorno': data_pubblicazione_Web.day,
+                'mese': data_pubblicazione_Web.month,
+                'anno': data_pubblicazione_Web.year,
                 'sentiment_post': post['sentiment'],
                 'comments': []
             }
         
-        #!!!! da completare tutti i post del web per ora non hanno commenti !!!!
         comments = post.get('comments', [])
         
-        '''
         for comment in comments:
-            data_comm = parse_data(comment['created_at_utc'])
+            data_comm_Web = format_data(comment['created_at_utc'])
             
             comm = {
-                'author': comment['author'],
-                'giorno': data_comm.day,
-                'mese': data_comm.month,
-                'anno': data_comm.year,
+                'author': comment['user'],
+                'giorno': data_comm_Web.day,
+                'mese': data_comm_Web.month,
+                'anno': data_comm_Web.year,
                 'sentiment_comment': comment['sentiment'],
-                'nr_like' : comment['likes_num']
+                'nr_like' : 0
             }
             
             postSing['comments'].append(comm)
-        '''
+            
         postSing['comments'].append(comments)
     
     return postSing 
@@ -367,7 +372,7 @@ def main():
             plot_bar_chart(f'{platform} statistics of posts: positive sentiment - year {year}', count_data['positive'])
             plot_bar_chart(f'{platform} statistics of posts: negative sentiment - year {year}', count_data['negative'])
             plot_bar_chart(f'{platform} statistics of posts: neutral sentiment - year {year}', count_data['neutral'])
-    
+
     '''for year, count_data in counts_comments.items():
         plot_bar_chart(year, f'General statistics of comments: positive sentiment - year {year}', count_data['positive'])
         plot_bar_chart(year, f'General statistics of comments: negative sentiment - year {year}', count_data['negative'])
@@ -379,3 +384,4 @@ def main():
     
 if __name__ == "__main__":
     main()
+
