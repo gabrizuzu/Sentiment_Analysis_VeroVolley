@@ -6,11 +6,41 @@ from datetime import datetime
 import matplotlib.pyplot as plt
 from matplotlib.dates import date2num
 
+# -------------------- LOAD FILE --------------------
 def load_data(file_name):
     with open(file_name, 'r') as f:
         data = json.load(f)
     return data
 
+
+# -------------------- FORMAT DATA --------------------
+
+# - Se anno presente nella stringa
+def check_year_present(date_str):
+    # Espressione regolare per cercare un anno nel formato 'YYYY'
+    year_pattern = r"\b\d{4}\b"
+
+    # Cerca un anno nella stringa data
+    match = re.search(year_pattern, date_str)
+
+    # Restituisci True se l'anno è presente, False altrimenti
+    return match is not None
+
+
+# - Se anno contiene un giorno della settimana 
+def contains_weekday(string):
+    week_days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',
+                 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'
+                 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica',
+                 'lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'
+                ]
+    for day in week_days:
+        if day in string:
+            return True
+    return False
+
+
+# - Aggiunta anno ne non presente
 def add_year_to_date(data):
     # 1) VERIFICA SE NELLA STRINGA È PRESENTE L'ANNO => 
     # se ok allora procede con la formattazione
@@ -40,28 +70,8 @@ def add_year_to_date(data):
             data = datetime.strptime(data, '%d %b %H:%M %Y')
             
         return data
-
-def check_year_present(date_str):
-    # Espressione regolare per cercare un anno nel formato 'YYYY'
-    year_pattern = r"\b\d{4}\b"
-
-    # Cerca un anno nella stringa data
-    match = re.search(year_pattern, date_str)
-
-    # Restituisci True se l'anno è presente, False altrimenti
-    return match is not None
-
-def contains_weekday(string):
-    week_days = ['Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday', 'Sunday',
-                 'monday', 'tuesday', 'wednesday', 'thursday', 'friday', 'saturday', 'sunday'
-                 'Lunedì', 'Martedì', 'Mercoledì', 'Giovedì', 'Venerdì', 'Sabato', 'Domenica',
-                 'lunedì', 'martedì', 'mercoledì', 'giovedì', 'venerdì', 'sabato', 'domenica'
-                ]
-    for day in week_days:
-        if day in string:
-            return True
-    return False
-
+    
+# - Format data
 def format_data(data):
     # CASO 1
     # "Today at 12:04" 
@@ -103,9 +113,10 @@ def format_data(data):
                     return parser.parse(data)
                     
 
-# Sentiment statistics
+# -------------------- SENTIMENT STATISTICS --------------------
+
 # GENERAL
-# POSTS
+# - Posts
 def count_sentiment_posts(posts):
     count = {
         2021: {'positive': [0] * 12, 'negative': [0] * 12, 'neutral': [0] * 12},
@@ -122,12 +133,11 @@ def count_sentiment_posts(posts):
         if anno in count:
             if sentiment == 'positive': count[anno]['positive'][mese - 1] += 1
             elif sentiment == 'negative': count[anno]['negative'][mese - 1] += 1
-            else: count[anno]['neutral'][mese - 1] += 1
+            elif sentiment == 'neutral': count[anno]['neutral'][mese - 1] += 1
 
     return count
     
-# COMMENTS
-'''
+# - Comments
 def count_sentiment_comments(posts):
     count = {
         2021: {'positive': [0] * 12, 'negative': [0] * 12, 'neutral': [0] * 12},
@@ -138,8 +148,8 @@ def count_sentiment_comments(posts):
 
     for post in posts:
         comments = post.get('comments', [])
+        
         for comment in comments:
-            if comment is not None:
                 if "verovolley" not in comment.get('author'):
                     anno = comment.get('anno')
                     mese = comment.get('mese')
@@ -148,12 +158,12 @@ def count_sentiment_comments(posts):
                     if anno in count:
                         if sentiment == 'positive': count[anno]['positive'][mese - 1] += 1
                         elif sentiment == 'negative': count[anno]['negative'][mese - 1] += 1
-                        else: count[anno]['neutral'][mese - 1] += 1
+                        elif sentiment == 'neutral': count[anno]['neutral'][mese - 1] += 1
 
     return count
-'''
 
 # SPECIFIC
+# - Posts
 def count_sentiment_posts_specific(posts, platform):
     count = {
         2021: {'positive': [0] * 12, 'negative': [0] * 12, 'neutral': [0] * 12},
@@ -171,11 +181,39 @@ def count_sentiment_posts_specific(posts, platform):
             if anno in count:
                 if sentiment == 'positive': count[anno]['positive'][mese - 1] += 1
                 elif sentiment == 'negative': count[anno]['negative'][mese - 1] += 1
-                else: count[anno]['neutral'][mese - 1] += 1
+                elif sentiment == 'neutral' : count[anno]['neutral'][mese - 1] += 1
 
     return count
 
-# Plot the statistics 
+# - Comments
+def count_sentiment_comments_specific(posts, platform):
+    count = {
+        2021: {'positive': [0] * 12, 'negative': [0] * 12, 'neutral': [0] * 12},
+        2022: {'positive': [0] * 12, 'negative': [0] * 12, 'neutral': [0] * 12},
+        2023: {'positive': [0] * 12, 'negative': [0] * 12, 'neutral': [0] * 12},
+        2024: {'positive': [0] * 12, 'negative': [0] * 12, 'neutral': [0] * 12}
+    }
+
+    for post in posts:
+        if post['platform'] == platform:
+            comments = post.get('comments', [])
+            
+            for comment in comments:
+                    if "verovolley" not in comment.get('author'):
+                        anno = comment.get('anno')
+                        mese = comment.get('mese')
+                        sentiment = comment.get('sentiment_comment')
+
+                        if anno in count:
+                            if sentiment == 'positive': count[anno]['positive'][mese - 1] += 1
+                            elif sentiment == 'negative': count[anno]['negative'][mese - 1] += 1
+                            elif sentiment == 'neutral': count[anno]['neutral'][mese - 1] += 1
+
+    return count
+
+
+# -------------------- PLOT THE STATISTICS --------------------
+
 def plot_bar_chart(title, data):
     months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     colors = ['green', 'red', 'blue', 'yellow', 'orange', 'purple', 'pink', 'cyan', 'magenta', 'brown', 'grey', 'black']
@@ -192,14 +230,13 @@ def plot_bar_chart(title, data):
     plt.show()
 
 
-# OTTENIAMO UN UNICO ARRAY FORMATTATO NEL SEGUENTE MODO:
+# OTTENIAMO UN UNICO DICT FORMATTATO NEL SEGUENTE MODO:
 #               - platform
 #               - source
 #               - giorno
 #               - mese
 #               - anno 
 #               - sentiment_post
-#           !!! SOLO PER IG & FB !!!
 #               - nr_like
 #               - nr_comments
 #               - comments {
@@ -208,7 +245,8 @@ def plot_bar_chart(title, data):
 #                   - mese
 #                   - anno
 #                   - sentiment_comment
-#                   - nr_like    
+#                   - nr_like (X WEB IMPOSTATI A 0)
+#                 }
 def process_post(post):  
     platform = post['platform']
         
@@ -241,21 +279,20 @@ def process_post(post):
                 'comments': []
             }
             
-        for comment in post.get('comments', []):
-            data_comm_IG = format_data(comment['created_at_utc'])
+        for comment_IG in post.get('comments', []):
+            data_comm_IG = format_data(comment_IG['created_at_utc'])
             
-            comm = {
-                'author': comment['username'],
+            comm_IG = {
+                'author': comment_IG['username'],
                 'giorno': data_comm_IG.day,
                 'mese': data_comm_IG.month,
                 'anno': data_comm_IG.year,
-                'sentiment_comment': comment['sentiment'],
-                'nr_like' : comment['like_count']
+                'sentiment_comment': comment_IG['sentiment'],
+                'nr_like' : comment_IG['like_count']
             }
             
-            postSing['comments'].append(comm)
-        
-                
+            postSing['comments'].append(comm_IG) 
+              
     #FACEBOOK
     elif platform == 'FB':
         data_pubblicazione_FB = format_data(post['date'])
@@ -286,20 +323,20 @@ def process_post(post):
                 'comments': []
             }
         
-        for comment in post.get('comments', []):
-            data_comm_FB = format_data(comment['date'])
+        for comment_FB in post.get('comments', []):
+            data_comm_FB = format_data(comment_FB['date'])
             
-            comm = {
-                'author': comment['author'],
+            comm_FB = {
+                'author': comment_FB['author'],
                 'giorno': data_comm_FB.day,
                 'mese': data_comm_FB.month,
                 'anno': data_comm_FB.year,
-                'sentiment_comment': comment['sentiment'],
-                'nr_like' : comment['likes_num']
+                'sentiment_comment': comment_FB['sentiment'],
+                'nr_like' : comment_FB['likes_num']
             }
             
-            postSing['comments'].append(comm)
-    
+            postSing['comments'].append(comm_FB)
+
     #WEB
     elif platform == 'Web':
         data_pubblicazione_Web = format_data(post['date'])
@@ -326,60 +363,83 @@ def process_post(post):
                 'comments': []
             }
         
-        comments = post.get('comments', [])
+        comments_Web = post.get('comments', [])
         
-        for comment in comments:
-            data_comm_Web = format_data(comment['created_at_utc'])
+        for comment_Web in comments_Web:
+            data_comm_Web = format_data(comment_Web['created_at_utc'])
             
-            comm = {
-                'author': comment['user'],
+            comm_Web = {
+                'author': comment_Web['user'],
                 'giorno': data_comm_Web.day,
                 'mese': data_comm_Web.month,
                 'anno': data_comm_Web.year,
-                'sentiment_comment': comment['sentiment'],
+                'sentiment_comment': comment_Web['sentiment'],
                 'nr_like' : 0
             }
             
-            postSing['comments'].append(comm)
-            
-        postSing['comments'].append(comments)
+            postSing['comments'].append(comm_Web)
     
-    return postSing 
+    return postSing
+
+# -------------------- MAIN GENERALE --------------------
 
 def main():
     file_path = '/Users/clapcibus/Downloads/sentiment_total.json'
     data = load_data(file_path)
-    processed_posts = [process_post(post) for post in data]
-    counts_post = count_sentiment_posts(processed_posts)
-   
-    # Conteggio dei post per la piattaforma specifica
+    
     platforms = ['IG', 'FB', 'Web']
+    # dict formattato 
+    processed_posts = [process_post(post) for post in data]
+    
+    # GENERALI
+    # - Posts
+    counts_post = count_sentiment_posts(processed_posts)
+    
+    # - Comments
+    counts_comments = count_sentiment_comments(processed_posts)
+   
+   
+    # SPECIFICI PER PIATTAFORMA
+    # - Posts
     counts_posts_specific = {}
     for platform in platforms:
         counts_posts_specific[platform] = count_sentiment_posts_specific(processed_posts, platform)
-
-    #counts_comments = count_sentiment_comments(processed_posts)
+        
+    # - Comments
+    counts_comments_specific = {}
+    for platform in platforms:
+        counts_comments_specific[platform] = count_sentiment_comments_specific(processed_posts, platform)
     
-    # GENERAL STATISTICS
+    
+    # ---- PLOT ----
+    
+    # Statistiche generali
+    # - Post
     for year, count_data in counts_post.items():
         plot_bar_chart(f'General statistics of posts: positive sentiment - year {year}', count_data['positive'])
         plot_bar_chart(f'General statistics of posts: negative sentiment - year {year}', count_data['negative'])
         plot_bar_chart(f'General statistics of posts: neutral sentiment - year {year}', count_data['neutral'])
+    
+    # - Comments
+    for year, count_data in counts_comments.items():
+        plot_bar_chart(f'General statistics of comments: positive sentiment - year {year}', count_data['positive'])
+        plot_bar_chart(f'General statistics of comments: negative sentiment - year {year}', count_data['negative'])
+        plot_bar_chart(f'General statistics of comments: neutral sentiment - year {year}', count_data['neutral'])
         
-    # SPECIFIC STATISTICS FOR EACH PLATFORM
+    # Statistiche specifiche per piattaforma
+    # - Post
     for platform, counts in counts_posts_specific.items():
         for year, count_data in counts.items():
             plot_bar_chart(f'{platform} statistics of posts: positive sentiment - year {year}', count_data['positive'])
             plot_bar_chart(f'{platform} statistics of posts: negative sentiment - year {year}', count_data['negative'])
             plot_bar_chart(f'{platform} statistics of posts: neutral sentiment - year {year}', count_data['neutral'])
-
-    '''for year, count_data in counts_comments.items():
-        plot_bar_chart(year, f'General statistics of comments: positive sentiment - year {year}', count_data['positive'])
-        plot_bar_chart(year, f'General statistics of comments: negative sentiment - year {year}', count_data['negative'])
-        plot_bar_chart(year, f'General statistics of comments: neutral sentiment - year {year}', count_data['neutral'])
-    '''
     
-    #SPECIFIC STATISTICS
+    # - Comments
+    for platform, counts in counts_comments_specific.items():
+        for year, count_data in counts.items():
+            plot_bar_chart(f'{platform} statistics of comments: positive sentiment - year {year}', count_data['positive'])
+            plot_bar_chart(f'{platform} statistics of comments: negative sentiment - year {year}', count_data['negative'])
+            plot_bar_chart(f'{platform} statistics of comments: neutral sentiment - year {year}', count_data['neutral'])
     
     
 if __name__ == "__main__":
