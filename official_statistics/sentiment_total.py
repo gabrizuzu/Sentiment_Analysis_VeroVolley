@@ -4,6 +4,7 @@ import re
 from dateutil import parser
 from datetime import datetime
 import matplotlib.pyplot as plt
+import numpy as np
 
 # -------------------- LOAD FILE --------------------
 def load_data(file_name):
@@ -110,7 +111,20 @@ def format_data(data):
                 except ValueError:
                     # data formato accettabile (SI SPERA.....)
                     return parser.parse(data)
-                    
+
+def check_format__comment_like(value):
+    if isinstance(value, str):
+        # Casistica numero con virgola, ad esempio 5,130 = 5130
+        if ',' in value: value = value.replace(',', '')
+        
+        # Casistica numero = Num Likes Not Found / Num Comments Not Found
+        # SOLO PER WEB NR LIKES AND COMMENTS = NOT DEFINED (valore fittizio inserito per avere tutto il dict uguale)
+        if value in 'Num Likes Not Found' or value in 'Num Comments Not Found' or value in 'Not Defined':
+            value = 0
+        
+        value = int(value)   
+    
+    return value                   
 
 # -------------------- SENTIMENT STATISTICS --------------------
 
@@ -210,24 +224,166 @@ def count_sentiment_comments_specific(posts, platform):
 
     return count
 
+# -------------------- COUNT LIKES AND COMMENTS FOR THE STATISTICS --------------------
+
+# GENERAL
+# - Posts
+def count_like_posts(posts):
+    count = {
+        2021: {'num_likes': [0] * 12, 'num_posts': [0] * 12, 'num_comments': [0] * 12},
+        2022: {'num_likes': [0] * 12, 'num_posts': [0] * 12, 'num_comments': [0] * 12},
+        2023: {'num_likes': [0] * 12, 'num_posts': [0] * 12, 'num_comments': [0] * 12},
+        2024: {'num_likes': [0] * 12, 'num_posts': [0] * 12, 'num_comments': [0] * 12}
+    }
+
+    for post in posts:
+        anno = post['anno']
+        mese = post['mese']
+        nr_like = check_format__comment_like(post['nr_like'])
+        nr_comments = check_format__comment_like(post['nr_comment'])
+        
+        if anno in count:
+            count[anno]['num_likes'][mese - 1] += nr_like                    
+            count[anno]['num_posts'][mese - 1] += 1
+            count[anno]['num_comments'][mese - 1] += nr_comments
+
+    return count
+    
+# - Comments
+def count_like_comments(posts):
+    count = {
+        2021: {'num_likes': [0] * 12, 'num_comments': [0] * 12},
+        2022: {'num_likes': [0] * 12, 'num_comments': [0] * 12},
+        2023: {'num_likes': [0] * 12, 'num_comments': [0] * 12},
+        2024: {'num_likes': [0] * 12, 'num_comments': [0] * 12}
+    }
+
+    for post in posts:
+        comments = post.get('comments', [])
+        
+        for comment in comments:
+                if "verovolley" not in comment.get('author'):
+                    anno = comment.get('anno')
+                    mese = comment.get('mese')
+                    nr_like = 0
+                    nr_like = check_format__comment_like(post['nr_like'])
+
+                    if anno in count:
+                        count[anno]['num_likes'][mese - 1] += nr_like                    
+                        count[anno]['num_comments'][mese - 1] += 1
+
+    return count
+
+# SPECIFIC
+# - Posts
+def count_like_posts_specific(posts, platform):
+    count = {
+        2021: {'num_likes': [0] * 12, 'num_posts': [0] * 12, 'num_comments': [0] * 12},
+        2022: {'num_likes': [0] * 12, 'num_posts': [0] * 12, 'num_comments': [0] * 12},
+        2023: {'num_likes': [0] * 12, 'num_posts': [0] * 12, 'num_comments': [0] * 12},
+        2024: {'num_likes': [0] * 12, 'num_posts': [0] * 12, 'num_comments': [0] * 12}
+    }
+
+    for post in posts:
+        if post['platform'] == platform:
+            anno = post['anno']
+            mese = post['mese']
+            nr_like = 0
+            nr_like = check_format__comment_like(post['nr_like'])
+            nr_comments = check_format__comment_like(post['nr_comment'])
+
+            if anno in count:
+                count[anno]['num_likes'][mese - 1] += nr_like
+                count[anno]['num_posts'][mese - 1] += 1
+                count[anno]['num_comments'][mese - 1] += nr_comments
+
+    return count
+
+# - Comments    ??? MA È SENSATA ???
+def count_like_comments_specific(posts, platform):
+    count = {
+        2021: {'num_likes': [0] * 12, 'num_comments': [0] * 12},
+        2022: {'num_likes': [0] * 12, 'num_comments': [0] * 12},
+        2023: {'num_likes': [0] * 12, 'num_comments': [0] * 12},
+        2024: {'num_likes': [0] * 12, 'num_comments': [0] * 12}
+    }
+
+    for post in posts:
+        if post['platform'] == platform:
+            comments = post.get('comments', [])
+            
+            for comment in comments:
+                    if "verovolley" not in comment.get('author'):
+                        anno = comment.get('anno')
+                        mese = comment.get('mese')
+                        nr_like = 0
+                        nr_like = check_format__comment_like(post['nr_like'])
+
+                        if anno in count:
+                            count[anno]['num_likes'][mese - 1] += nr_like
+                            count[anno]['num_comments'][mese - 1] += 1
+
+    return count
+
 
 # -------------------- PLOT THE STATISTICS --------------------
 
-def plot_bar_chart(title, data):
+def plot_bar_chart_3data(xlabel, ylabel, title, data1, data2, data3, label1, label2, label3):
     months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
-    colors = ['green', 'red', 'blue', 'yellow', 'orange', 'purple', 'pink', 'cyan', 'magenta', 'brown', 'grey', 'black']
-    bars = plt.bar(months, data, color=colors)
-    for bar, value in zip(bars, data):
-        plt.text(bar.get_x() + bar.get_width()/2, bar.get_height(), value, ha='center', va='bottom', fontsize=8, color='black', weight='bold')
+    x = np.arange(len(months))  # the label locations
+    width = 0.25  # the width of the bars
+
+    fig, ax = plt.subplots(figsize=(12,8))
+    rects1 = ax.bar(x - width, data1, width, color='#e14547', label=f'{label1}')
+    rects2 = ax.bar(x, data2, width, color='#20519F', label=f'{label2}')
+    rects3 = ax.bar(x + width, data3, width, color='grey', label=f'{label3}')
     
-    plt.xlabel('Months', fontsize=10, weight='bold')
-    plt.ylabel('Value of sentiment', fontsize=10, weight='bold')
-    plt.title(title, fontsize=14)
-    plt.xticks(rotation=45)
-    plt.tight_layout()
-    plt.savefig(f'{title}.png')
+    # valori settati in scala logaritmica per una miglior presentazione dei dati
+    ax.set_yscale('log')
+
+    # Add some text for labels, title and custom x-axis tick labels, etc.
+    ax.set_xlabel(f'{xlabel}', fontweight='bold')
+    ax.set_ylabel(f'{ylabel}', fontweight='bold')
+    ax.set_title(f'{title}', fontsize=14, fontweight='bold')
+    ax.set_xticks(x)
+    ax.set_xticklabels(months, rotation=45, ha='right')
+    ax.legend()
+
+    ax.bar_label(rects1, padding=5, fontsize=8, fontweight='bold')
+    ax.bar_label(rects2, padding=5, fontsize=8, fontweight='bold')
+    ax.bar_label(rects3, padding=5, fontsize=8, fontweight='bold')
+
+    fig.tight_layout()
+    plt.savefig(f'{title}')
     plt.show()
 
+
+def plot_bar_chart_2data(xlabel, ylabel, title, data1, data2, label1, label2):
+    months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
+    x = np.arange(len(months))  # the label locations
+    width = 0.25  # the width of the bars
+
+    fig, ax = plt.subplots(figsize=(12,8))
+    rects1 = ax.bar(x - width/2, data1, width, color='#e14547', label=f'{label1}')
+    rects2 = ax.bar(x + width/2, data2, width, color='#20519F', label=f'{label2}')
+    
+    # valori settati in scala logaritmica per una miglior presentazione dei dati
+    ax.set_yscale('log')
+
+    # Add some text for labels, title and custom x-axis tick labels, etc.
+    ax.set_xlabel(f'{xlabel}', fontweight='bold')
+    ax.set_ylabel(f'{ylabel}', fontweight='bold')
+    ax.set_title(f'{title}', fontsize=14, fontweight='bold')
+    ax.set_xticks(x)
+    ax.set_xticklabels(months, rotation=45, ha='right')
+    ax.legend()
+
+    ax.bar_label(rects1, padding=5, fontsize=8, fontweight='bold')
+    ax.bar_label(rects2, padding=5, fontsize=8, fontweight='bold')
+
+    fig.tight_layout()
+    plt.savefig(f'{title}')
+    plt.show()
 
 # OTTENIAMO UN UNICO DICT FORMATTATO NEL SEGUENTE MODO:
 #               - platform
@@ -237,7 +393,7 @@ def plot_bar_chart(title, data):
 #               - anno 
 #               - sentiment_post
 #               - nr_like
-#               - nr_comments
+#               - nr_comment
 #               - comments {
 #                   - author
 #                   - giorno
@@ -348,6 +504,8 @@ def process_post(post):
                 'mese': data_pubblicazione_Web.month,
                 'anno': data_pubblicazione_Web.year,
                 'sentiment_post': 'none',
+                'nr_like': 'Not Defined',
+                'nr_comment' : 'Not Defined',
                 'comments': []
             }
         
@@ -359,6 +517,8 @@ def process_post(post):
                 'mese': data_pubblicazione_Web.month,
                 'anno': data_pubblicazione_Web.year,
                 'sentiment_post': post['sentiment'],
+                'nr_like': 'Not Defined',
+                'nr_comment' : 'Not Defined',
                 'comments': []
             }
         
@@ -371,7 +531,7 @@ def process_post(post):
                 'mese': data_comm_Web.month,
                 'anno': data_comm_Web.year,
                 'sentiment_comment': comment_Web['sentiment'],
-                'nr_like' : 0
+                'nr_like': '0'
             }
             
             postSing['comments'].append(comm_Web)
@@ -381,7 +541,7 @@ def process_post(post):
 # -------------------- MAIN GENERALE --------------------
 
 def main():
-    file_path = 'INSERT YOUR FILE PATH'
+    file_path = '/Users/clapcibus/Downloads/sentiment_total.json'
     data = load_data(file_path)
     
     platforms = ['IG', 'FB', 'Web']
@@ -402,41 +562,80 @@ def main():
     for platform in platforms:
         counts_posts_specific[platform] = count_sentiment_posts_specific(processed_posts, platform)
         
-    # - Comments
+    # - Comments 
     counts_comments_specific = {}
     for platform in platforms:
         counts_comments_specific[platform] = count_sentiment_comments_specific(processed_posts, platform)
     
     
+    # COUNT NR OF LIKES AND COMMENTS
+    
+    # GENERALI
+    # - Posts
+    counts_likes_post = count_like_posts(processed_posts)
+    
+    # - Comments
+    counts_likes_comments = count_like_comments(processed_posts)
+   
+   
+    # SPECIFICI PER PIATTAFORMA
+    # - Posts
+    counts_like_posts_specific = {}
+    for platform in platforms:
+        counts_like_posts_specific[platform] = count_like_posts_specific(processed_posts, platform)
+        
+    # - Comments
+    counts_like_comments_specific = {}
+    for platform in platforms:
+        counts_like_comments_specific[platform] = count_like_comments_specific(processed_posts, platform)
+    
+    
     # ---- PLOT ----
+    
     # Statistiche generali
     # - Post
     for year, count_data in counts_post.items():
-        plot_bar_chart(f'General statistics of posts: positive sentiment - year {year}', count_data['positive'])
-        plot_bar_chart(f'General statistics of posts: negative sentiment - year {year}', count_data['negative'])
-        plot_bar_chart(f'General statistics of posts: neutral sentiment - year {year}', count_data['neutral'])
+        plot_bar_chart_3data('Months', 'Num of posts', f'Sentiment Analysis of Posts - {year}', count_data['positive'], count_data['negative'], count_data['neutral'], 'positive', 'negative', 'neutral')
     
     # - Comments
     for year, count_data in counts_comments.items():
-        plot_bar_chart(f'General statistics of comments: positive sentiment - year {year}', count_data['positive'])
-        plot_bar_chart(f'General statistics of comments: negative sentiment - year {year}', count_data['negative'])
-        plot_bar_chart(f'General statistics of comments: neutral sentiment - year {year}', count_data['neutral'])
+        plot_bar_chart_3data('Months', 'Num of comments', f'Sentiment Analysis of Comments - {year}', count_data['positive'], count_data['negative'], count_data['neutral'], 'positive', 'negative', 'neutral')
         
     # Statistiche specifiche per piattaforma
     # - Post
     for platform, counts in counts_posts_specific.items():
         for year, count_data in counts.items():
-            plot_bar_chart(f'{platform} statistics of posts: positive sentiment - year {year}', count_data['positive'])
-            plot_bar_chart(f'{platform} statistics of posts: negative sentiment - year {year}', count_data['negative'])
-            plot_bar_chart(f'{platform} statistics of posts: neutral sentiment - year {year}', count_data['neutral'])
+            plot_bar_chart_3data('Months', 'Num of posts', f'{platform} Sentiment Analysis of Posts - {year}', count_data['positive'], count_data['negative'], count_data['neutral'], 'positive', 'negative', 'neutral')
     
     # - Comments
     for platform, counts in counts_comments_specific.items():
         for year, count_data in counts.items():
-            plot_bar_chart(f'{platform} statistics of comments: positive sentiment - year {year}', count_data['positive'])
-            plot_bar_chart(f'{platform} statistics of comments: negative sentiment - year {year}', count_data['negative'])
-            plot_bar_chart(f'{platform} statistics of comments: neutral sentiment - year {year}', count_data['neutral'])
-            
+            plot_bar_chart_3data('Months', 'Num of comments', f'{platform} Sentiment Analysis of Comments - {year}', count_data['positive'], count_data['negative'], count_data['neutral'], 'positive', 'negative', 'neutral')
+    
+     
+    # COUNT NR OF LIKES AND COMMENTS
+    
+    # Generali
+    # - Post
+    for year, count_data in counts_likes_post.items():
+        plot_bar_chart_3data('Months', 'Values', f'Comprehensive Analysis of Posts Statistics - {year}', count_data['num_likes'], count_data['num_posts'], count_data['num_comments'], 'likes of posts', 'posts', 'comments')
+    
+    # - Comments
+    for year, count_data in counts_likes_comments.items():
+        plot_bar_chart_2data('Months', 'Values', f'Comprehensive Analysis of Comments Statistics - {year}', count_data['num_likes'], count_data['num_comments'], 'likes of comments', 'comments')
+    
+        
+    # Specifiche per piattaforma
+    # - Post
+    for platform, counts in counts_like_posts_specific.items():
+        for year, count_data in counts.items():
+            plot_bar_chart_3data('Months', 'Values', f'{platform} Posts Analysis - {year}', count_data['num_likes'], count_data['num_posts'], count_data['num_comments'], 'likes of posts', 'posts', 'comments')
+        
+    # - Comments
+    for platform, counts in counts_like_comments_specific.items():
+        for year, count_data in counts.items():
+            plot_bar_chart_2data('Months', 'Values', f'{platform} Comments Analysis - {year}', count_data['num_likes'], count_data['num_comments'], 'likes of comments', 'comments')
+     
     
 if __name__ == "__main__":
     main()
