@@ -299,7 +299,7 @@ def count_like_posts_specific(posts, platform):
 
     return count
 
-# - Comments    ??? MA È SENSATA ???
+# - Comments   
 def count_like_comments_specific(posts, platform):
     count = {
         2021: {'num_likes': [0] * 12, 'num_comments': [0] * 12},
@@ -541,7 +541,7 @@ def process_post(post):
 # -------------------- MAIN GENERALE --------------------
 
 def main():
-    file_path = '/Users/clapcibus/Downloads/sentiment_total.json'
+    file_path = 'INSERT YOUR FILE PATH'
     data = load_data(file_path)
     
     platforms = ['IG', 'FB', 'Web']
