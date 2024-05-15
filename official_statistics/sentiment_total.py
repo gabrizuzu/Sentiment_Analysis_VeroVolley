@@ -331,12 +331,12 @@ def count_like_comments_specific(posts, platform):
 def plot_bar_chart_3data(xlabel, ylabel, title, data1, data2, data3, label1, label2, label3):
     months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     x = np.arange(len(months))  # the label locations
-    width = 0.25  # the width of the bars
+    width = 0.18 # the width of the bars
 
     fig, ax = plt.subplots(figsize=(12,8))
-    rects1 = ax.bar(x - width, data1, width, color='#e14547', label=f'{label1}')
-    rects2 = ax.bar(x, data2, width, color='#20519F', label=f'{label2}')
-    rects3 = ax.bar(x + width, data3, width, color='grey', label=f'{label3}')
+    rects1 = ax.bar(x - width, data1, width, color='#20519F', label=f'{label1}')
+    rects2 = ax.bar(x, data2, width, color='#e14547', label=f'{label2}')
+    rects3 = ax.bar(x + width, data3, width, color='#A8D9FD', label=f'{label3}')
     
     # valori settati in scala logaritmica per una miglior presentazione dei dati
     ax.set_yscale('log')
@@ -361,11 +361,11 @@ def plot_bar_chart_3data(xlabel, ylabel, title, data1, data2, data3, label1, lab
 def plot_bar_chart_2data(xlabel, ylabel, title, data1, data2, label1, label2):
     months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec']
     x = np.arange(len(months))  # the label locations
-    width = 0.25  # the width of the bars
+    width = 0.18  # the width of the bars
 
     fig, ax = plt.subplots(figsize=(12,8))
-    rects1 = ax.bar(x - width/2, data1, width, color='#e14547', label=f'{label1}')
-    rects2 = ax.bar(x + width/2, data2, width, color='#20519F', label=f'{label2}')
+    rects1 = ax.bar(x - width/2, data1, width, color='#20519F', label=f'{label1}')
+    rects2 = ax.bar(x + width/2, data2, width, color='#e14547', label=f'{label2}')
     
     # valori settati in scala logaritmica per una miglior presentazione dei dati
     ax.set_yscale('log')
