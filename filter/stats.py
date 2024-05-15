@@ -60,7 +60,7 @@ def create_labels(sentiments):
     return labels
 
 def create_pie_chart(sentiments, labels, platform):
-    colors = ['green', 'red', 'gray']
+    colors = ['#20519F', '#e14547', '#A8D9F0']
     sizes = sentiments.values()
     patches, text = plt.pie(sizes, colors=colors, startangle=90)
     plt.legend(patches, labels, loc="best")
@@ -70,7 +70,7 @@ def create_pie_chart(sentiments, labels, platform):
     
 
 def create_pie_chart_source(sentiments, labels, source, platform):
-    colors = ['green', 'red', 'gray']
+    colors = ['#20519F', '#e14547', '#A8D9F0']
     sizes = sentiments.values()
     if sum(sizes) == 0:
         print(f"No data for source {source} in platform {platform}. Skipping pie chart.")
