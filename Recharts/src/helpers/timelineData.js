@@ -14,26 +14,29 @@ const monthLabels = [
   "Nov",
   "Dec",
 ];
+
+const seasonStart = 6;
+
 // - Comments
 export function countSentimentComments(platforms) {
   const posts = getProcessedPosts();
   const count = {
-    2021: {
+    "2020/2021": {
       positive: new Array(12).fill(0),
       negative: new Array(12).fill(0),
       neutral: new Array(12).fill(0),
     },
-    2022: {
+    "2021/2022": {
       positive: new Array(12).fill(0),
       negative: new Array(12).fill(0),
       neutral: new Array(12).fill(0),
     },
-    2023: {
+    "2022/2023": {
       positive: new Array(12).fill(0),
       negative: new Array(12).fill(0),
       neutral: new Array(12).fill(0),
     },
-    2024: {
+    "2023/2024": {
       positive: new Array(12).fill(0),
       negative: new Array(12).fill(0),
       neutral: new Array(12).fill(0),
@@ -52,11 +55,17 @@ export function countSentimentComments(platforms) {
         const mese = comment.mese;
         const sentiment = comment.sentiment_comment;
 
-        if (count[anno]) {
-          if (sentiment === "positive") count[anno].positive[mese - 1] += 1;
+        let season = `${anno - 1}/${anno}`;
+        if (mese - 1 >= seasonStart) {
+          season = `${anno}/${anno + 1}`;
+        }
+
+        if (count[season]) {
+          if (sentiment === "positive") count[season].positive[mese - 1] += 1;
           else if (sentiment === "negative")
-            count[anno].negative[mese - 1] += 1;
-          else if (sentiment === "neutral") count[anno].neutral[mese - 1] += 1;
+            count[season].negative[mese - 1] += 1;
+          else if (sentiment === "neutral")
+            count[season].neutral[mese - 1] += 1;
         }
       }
     }
@@ -69,22 +78,22 @@ export function countSentimentComments(platforms) {
 export function countSentimentPosts(platforms) {
   const posts = getProcessedPosts();
   const count = {
-    2021: {
+    "2020/2021": {
       positive: new Array(12).fill(0),
       negative: new Array(12).fill(0),
       neutral: new Array(12).fill(0),
     },
-    2022: {
+    "2021/2022": {
       positive: new Array(12).fill(0),
       negative: new Array(12).fill(0),
       neutral: new Array(12).fill(0),
     },
-    2023: {
+    "2022/2023": {
       positive: new Array(12).fill(0),
       negative: new Array(12).fill(0),
       neutral: new Array(12).fill(0),
     },
-    2024: {
+    "2023/2024": {
       positive: new Array(12).fill(0),
       negative: new Array(12).fill(0),
       neutral: new Array(12).fill(0),
@@ -99,17 +108,22 @@ export function countSentimentPosts(platforms) {
     const mese = post.mese;
     const sentiment = post.sentiment_post;
 
-    if (count[anno]) {
-      if (sentiment === "positive") count[anno].positive[mese - 1] += 1;
-      else if (sentiment === "negative") count[anno].negative[mese - 1] += 1;
-      else if (sentiment === "neutral") count[anno].neutral[mese - 1] += 1;
+    let season = `${anno - 1}/${anno}`;
+    if (mese - 1 >= seasonStart) {
+      season = `${anno}/${anno + 1}`;
+    }
+
+    if (count[season]) {
+      if (sentiment === "positive") count[season].positive[mese - 1] += 1;
+      else if (sentiment === "negative") count[season].negative[mese - 1] += 1;
+      else if (sentiment === "neutral") count[season].neutral[mese - 1] += 1;
     }
   }
 
   return count;
 }
 
-export function getTimelineData(year, platforms, isComments = false) {
+export function getTimelineData(season, platforms, isComments = false) {
   let count;
   if (isComments) {
     count = countSentimentComments(platforms);
@@ -119,12 +133,13 @@ export function getTimelineData(year, platforms, isComments = false) {
 
   const data = [];
 
-  for (const month of [...Array(12).keys()]) {
+  for (const index of [...Array(12).keys()]) {
+    const month = (index + seasonStart) % 12;
     data.push({
       month: monthLabels[month],
-      positive: count[year].positive[month],
-      negative: count[year].negative[month],
-      neutral: count[year].neutral[month],
+      positive: count[season].positive[month],
+      negative: count[season].negative[month],
+      neutral: count[season].neutral[month],
     });
   }
 

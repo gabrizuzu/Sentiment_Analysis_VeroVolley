@@ -36,15 +36,17 @@ const BarChartComponent = ({ xlabel, ylabel, title, data }) => {
           <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#6495CE" stopOpacity={1} />
             <stop offset="10%" stopColor="#20519F" stopOpacity={1} />
-            <stop offset="100%" stopColor="#20519F" stopOpacity={1} />
+            <stop offset="100%" stopColor="#20519F" stopOpacity={0.8} />
           </linearGradient>
           <linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
             <stop offset="0%" stopColor="#C58FA2" stopOpacity={1} />
             <stop offset="10%" stopColor="#A8D9FD" stopOpacity={1} />
+            <stop offset="50%" stopColor="#A8D9FD" stopOpacity={0.7} />
             <stop offset="90%" stopColor="#A8D9FD" stopOpacity={1} />
             <stop offset="100%" stopColor="#6495CE" stopOpacity={1} />
           </linearGradient>
           <linearGradient id="colorAmt" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stopColor="#e14547" stopOpacity={0.8} />
             <stop offset="90%" stopColor="#e14547" stopOpacity={1} />
             <stop offset="100%" stopColor="#C58FA2" stopOpacity={1} />
           </linearGradient>
@@ -61,11 +63,8 @@ const BarChartComponent = ({ xlabel, ylabel, title, data }) => {
             <stop offset="100%" stopColor="#e14547" stopOpacity={0.2} />
           </linearGradient> */}
         </defs>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis
-          dataKey="name"
-          label={{ value: xlabel, position: "insideBottomRight", offset: 0 }}
-        />
+        <CartesianGrid vertical={false} strokeDasharray="3 3" />
+        <XAxis dataKey="month" />
         <YAxis
           // scale="log"
           // domain={["auto", "auto"]}
@@ -108,10 +107,7 @@ const AreaChartComponent = ({ xlabel, ylabel, title, data }) => {
           </linearGradient>
         </defs>
         <CartesianGrid strokeDasharray="3 3" />
-        <XAxis
-          dataKey="name"
-          label={{ value: xlabel, position: "insideBottomRight", offset: 0 }}
-        />
+        <XAxis dataKey="month" />
         <YAxis
           // scale="log"
           // domain={["auto", "auto"]}
@@ -242,34 +238,35 @@ const SingleRadarChartComponent = ({ data }) => {
 };
 
 const App = () => {
-  const [year, setYear] = useState(2024);
-
   const availablePlatforms = [
     { name: "Facebook", key: "FB" },
     { name: "Instagram", key: "IG" },
     { name: "Blogs", key: "Web" },
   ];
+  const availableSeasons = ["2023/2024", "2022/2023", "2021/2022", "2020/2021"];
 
+  const [season, setSeasons] = useState(availableSeasons[0]);
   const [platforms, setPlatforms] = useState(
     Object.values(availablePlatforms).map((p) => p.key)
   );
 
-  const timelineDataPosts = getTimelineData(year, platforms);
-  const timelineDataComments = getTimelineData(year, platforms, true);
+  const timelineDataPosts = getTimelineData(season, platforms);
+  const timelineDataComments = getTimelineData(season, platforms, true);
   const radarData = getRadarData();
 
   return (
     <div>
       <div style={{ display: "flex", width: "100%", margin: "auto" }}>
         <select
-          value={year}
-          onChange={(e) => setYear(e.target.value)}
+          value={season}
+          onChange={(e) => setSeasons(e.target.value)}
           style={{ width: "100%", fontSize: 26 }}
         >
-          <option value={2024}>2024</option>
-          <option value={2023}>2023</option>
-          <option value={2022}>2022</option>
-          <option value={2021}>2021</option>
+          {availableSeasons.map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
+          ))}
         </select>
         <select
           value={platforms}
