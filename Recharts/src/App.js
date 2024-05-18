@@ -304,7 +304,7 @@ const App = () => {
           />
         </div>
       </div>
-      <h1>Posts Comments Graph</h1>
+      <h1>Sentiment Posts Graph</h1>
       <div style={{ display: "flex", width: "100%" }}>
         <div style={{ width: "50%" }}>
           <BarChartComponent

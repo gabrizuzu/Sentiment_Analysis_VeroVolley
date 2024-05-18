@@ -52,20 +52,21 @@ export function countSentimentComments(platforms) {
     for (const comment of comments) {
       if (!comment.author.includes("verovolley")) {
         const anno = comment.anno;
-        const mese = comment.mese;
+        const mese = comment.mese - 1;
         const sentiment = comment.sentiment_comment;
 
         let season = `${anno - 1}/${anno}`;
-        if (mese - 1 >= seasonStart) {
+        if (mese >= seasonStart) {
           season = `${anno}/${anno + 1}`;
         }
 
         if (count[season]) {
-          if (sentiment === "positive") count[season].positive[mese - 1] += 1;
+          if (sentiment === "positive")
+            count[season].positive[(mese + 12 - seasonStart) % 12] += 1;
           else if (sentiment === "negative")
-            count[season].negative[mese - 1] += 1;
+            count[season].negative[(mese + 12 - seasonStart) % 12] += 1;
           else if (sentiment === "neutral")
-            count[season].neutral[mese - 1] += 1;
+            count[season].neutral[(mese + 12 - seasonStart) % 12] += 1;
         }
       }
     }
@@ -105,18 +106,25 @@ export function countSentimentPosts(platforms) {
       continue;
     }
     const anno = post.anno;
-    const mese = post.mese;
+    const mese = post.mese - 1;
     const sentiment = post.sentiment_post;
 
     let season = `${anno - 1}/${anno}`;
-    if (mese - 1 >= seasonStart) {
+    if (mese >= seasonStart) {
       season = `${anno}/${anno + 1}`;
     }
 
+    if (anno == 2024 && mese >= 5) {
+      console.log(post);
+    }
+
     if (count[season]) {
-      if (sentiment === "positive") count[season].positive[mese - 1] += 1;
-      else if (sentiment === "negative") count[season].negative[mese - 1] += 1;
-      else if (sentiment === "neutral") count[season].neutral[mese - 1] += 1;
+      if (sentiment === "positive")
+        count[season].positive[(mese + 12 - seasonStart) % 12] += 1;
+      else if (sentiment === "negative")
+        count[season].negative[(mese + 12 - seasonStart) % 12] += 1;
+      else if (sentiment === "neutral")
+        count[season].neutral[(mese + 12 - seasonStart) % 12] += 1;
     }
   }
 
@@ -134,12 +142,11 @@ export function getTimelineData(season, platforms, isComments = false) {
   const data = [];
 
   for (const index of [...Array(12).keys()]) {
-    const month = (index + seasonStart) % 12;
     data.push({
-      month: monthLabels[month],
-      positive: count[season].positive[month],
-      negative: count[season].negative[month],
-      neutral: count[season].neutral[month],
+      month: monthLabels[(index + seasonStart) % 12],
+      positive: count[season].positive[index],
+      negative: count[season].negative[index],
+      neutral: count[season].neutral[index],
     });
   }
 
