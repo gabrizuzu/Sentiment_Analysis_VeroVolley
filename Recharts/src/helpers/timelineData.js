@@ -15,7 +15,7 @@ const monthLabels = [
   "Dec",
 ];
 
-const seasonStart = 6;
+const seasonStart = 8;
 
 // - Comments
 export function countSentimentComments(platforms) {
