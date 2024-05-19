@@ -23,6 +23,7 @@ import Downloader from "./components/downloader";
 import { AVAILABLE_KEYWORDS } from "./helpers/formatData";
 
 const COLORS = {
+  total: "#A3A3A3",
   positive: "#20519F",
   negative: "#e14547",
   neutral: "#A8D9FD",
@@ -285,6 +286,13 @@ const RadarChartComponent = ({
           fill={COLORS["neutral"]}
           fillOpacity={0.6}
         /> */}
+          <Radar
+            name="Total"
+            dataKey="total"
+            stroke={COLORS["total"]}
+            fill={COLORS["total"]}
+            fillOpacity={0.6}
+          />
           <Radar
             name="Positivity"
             dataKey="positive"

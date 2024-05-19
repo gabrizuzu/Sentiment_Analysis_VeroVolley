@@ -49,7 +49,9 @@ function getRadarData(seasons, platforms, usePosts) {
   }
 
   const final_data = [];
-
+  const total_comments_sum = Object.values(total_comments).reduce(
+    (a, b) => a + b
+  );
   for (const [keyword, value] of Object.entries(data)) {
     const subdata = { subject: keyword };
     for (const sentiment of sentiments) {
@@ -57,9 +59,14 @@ function getRadarData(seasons, platforms, usePosts) {
         (data[keyword][sentiment] * 100) / total_comments[keyword]
       );
     }
+    subdata["total"] = Math.round(
+      (total_comments[keyword] * 100) / total_comments_sum
+    );
+
     subdata.subject = keyword.charAt(0).toUpperCase() + keyword.slice(1);
     final_data.push(subdata);
   }
+
   return final_data;
 }
 
