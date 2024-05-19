@@ -310,19 +310,33 @@ const App = () => {
   const [platforms, setPlatforms] = useState(
     Object.values(availablePlatforms).map((p) => p.key)
   );
-  const [usePosts, setUsePosts] = useState(true);
+  const [usePostsTimeline, setUsePostsTimeline] = useState(true);
+  const [usePostsRadar, setUsePostsRadar] = useState(true);
 
   const timelineDataPosts = getTimelineData(season, platforms);
   const timelineDataComments = getTimelineData(season, platforms, true);
-  const radarData = getRadarData();
+  const radarData = getRadarData(usePostsRadar);
 
   return (
     <div>
-      <div style={{ display: "flex", width: "100%", margin: "auto" }}>
+      <div style={{ display: "flex", gap: 20 }}>
+        <h1>{usePostsTimeline ? "Posts" : "Comments"} Sentiment Timelines</h1>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <button onClick={() => setUsePostsTimeline(!usePostsTimeline)}>
+            {usePostsTimeline ? "Change To Comments" : "Change To Posts"}
+          </button>
+        </div>
+      </div>
+      <div style={{ display: "flex", width: "50%", margin: "auto", gap: 50 }}>
         <select
           value={season}
           onChange={(e) => setSeasons(e.target.value)}
-          style={{ width: "100%", fontSize: 26 }}
+          style={{ width: "100%", fontSize: 26, textAlign: "center" }}
         >
           {availableSeasons.map((s) => (
             <option key={s} value={s}>
@@ -347,36 +361,37 @@ const App = () => {
           ))}
         </select>
       </div>
-
-      <div style={{ display: "flex", gap: 20 }}>
-        <h1>{usePosts ? "Posts" : "Comments"} Sentiment Timelines</h1>
-        <div
-          style={{
-            display: "flex",
-            alignItems: "center",
-          }}
-        >
-          <button onClick={() => setUsePosts(!usePosts)}>
-            {usePosts ? "Change To Comments" : "Change To Posts"}
-          </button>
-        </div>
-      </div>
       <Downloader
-        data={usePosts ? timelineDataPosts : timelineDataComments}
+        data={usePostsTimeline ? timelineDataPosts : timelineDataComments}
         ChartComponent={BarChartComponent}
         props={{
           ylabel: "Comments",
         }}
       />
       <Downloader
-        data={usePosts ? timelineDataPosts : timelineDataComments}
+        data={usePostsTimeline ? timelineDataPosts : timelineDataComments}
         ChartComponent={AreaChartComponent}
         props={{
           ylabel: "Comments",
         }}
       />
 
-      <h1>Athletes Sentiment Radar</h1>
+      <div style={{ display: "flex", gap: 20 }}>
+        <h1>
+          Athletes Percentage of Sentiment by{" "}
+          {usePostsTimeline ? "Posts" : "Comments"}
+        </h1>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <button onClick={() => setUsePostsRadar(!usePostsRadar)}>
+            {usePostsTimeline ? "Change To Comments" : "Change To Posts"}
+          </button>
+        </div>
+      </div>
       <Downloader data={radarData} ChartComponent={RadarChartComponent} />
       <Downloader data={radarData} ChartComponent={SingleRadarChartComponent} />
     </div>
