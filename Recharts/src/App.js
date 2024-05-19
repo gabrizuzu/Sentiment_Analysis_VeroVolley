@@ -23,7 +23,7 @@ import Downloader from "./components/downloader";
 import { AVAILABLE_KEYWORDS } from "./helpers/formatData";
 
 const COLORS = {
-  total: "#A3A3A3",
+  quantity: "#A3A3A3",
   positive: "#20519F",
   negative: "#e14547",
   neutral: "#A8D9FD",
@@ -287,10 +287,10 @@ const RadarChartComponent = ({
           fillOpacity={0.6}
         /> */}
           <Radar
-            name="Total"
-            dataKey="total"
-            stroke={COLORS["total"]}
-            fill={COLORS["total"]}
+            name="Quantity"
+            dataKey="quantity"
+            stroke={COLORS["quantity"]}
+            fill={COLORS["quantity"]}
             fillOpacity={0.6}
           />
           <Radar

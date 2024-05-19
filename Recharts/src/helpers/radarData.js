@@ -59,7 +59,7 @@ function getRadarData(seasons, platforms, usePosts) {
         (data[keyword][sentiment] * 100) / total_comments[keyword]
       );
     }
-    subdata["total"] = Math.round(
+    subdata["quantity"] = Math.round(
       (total_comments[keyword] * 100) / total_comments_sum
     );
 
