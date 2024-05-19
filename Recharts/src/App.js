@@ -317,11 +317,13 @@ const App = () => {
     Object.values(availablePlatforms).map((p) => p.key)
   );
   const [usePostsRadar, setUsePostsRadar] = useState(true);
+  const [usePercentageTimeline, setUsePercentageTimeline] = useState(false);
 
   const timelineData = getTimelineData(
     seasonTimeline,
     platformsTimeline,
-    usePostsTimeline
+    usePostsTimeline,
+    usePercentageTimeline
   );
   const radarData = getRadarData(seasonsRadar, platformsRadar, usePostsRadar);
 
@@ -330,8 +332,16 @@ const App = () => {
     const usePost = usePostsTimeline ? "Posts" : "Comments";
     const platforms = "[" + platformsTimeline.join(",") + "]";
     const season = seasonTimeline.replace("/", "-");
-    setTimelineAttrsName(`${usePost}_${season}_${platforms}`);
-  }, [usePostsTimeline, seasonTimeline, platformsTimeline]);
+    setTimelineAttrsName(
+      `${usePost}_${season}_${platforms}` +
+        (usePercentageTimeline ? "_Percentual" : "")
+    );
+  }, [
+    usePostsTimeline,
+    seasonTimeline,
+    platformsTimeline,
+    usePercentageTimeline,
+  ]);
 
   const [radarAttrsName, setRadarAttrsName] = useState("");
   useEffect(() => {
@@ -387,6 +397,21 @@ const App = () => {
             </option>
           ))}
         </select>
+        <div
+          style={{
+            display: "flex",
+            justifyContent: "center",
+            alignItems: "center",
+          }}
+        >
+          <label htmlFor="usePercentage">Percentual</label>
+          <input
+            id="usePercentage"
+            type="checkbox"
+            onChange={(e) => setUsePercentageTimeline(e.target.checked)}
+            checked={usePercentageTimeline}
+          ></input>
+        </div>
       </div>
 
       <Downloader
@@ -395,7 +420,9 @@ const App = () => {
         xAxisLabel="month"
         ChartComponent={BarChartComponent}
         props={{
-          ylabel: "Comments",
+          ylabel:
+            (usePostsTimeline ? "Posts" : "Comments") +
+            (usePercentageTimeline ? " %" : ""),
         }}
       />
       <Downloader
@@ -404,7 +431,9 @@ const App = () => {
         xAxisLabel="month"
         ChartComponent={AreaChartComponent}
         props={{
-          ylabel: "Comments",
+          ylabel:
+            (usePostsTimeline ? "Posts" : "Comments") +
+            (usePercentageTimeline ? " %" : ""),
         }}
       />
 

@@ -117,7 +117,12 @@ export function countSentimentPosts(platforms) {
   return count;
 }
 
-export function getTimelineData(season, platforms, usePosts = true) {
+export function getTimelineData(
+  season,
+  platforms,
+  usePosts = true,
+  usePercentage = false
+) {
   let count;
   if (usePosts) {
     count = countSentimentPosts(platforms);
@@ -128,11 +133,22 @@ export function getTimelineData(season, platforms, usePosts = true) {
   const data = [];
 
   for (const index of [...Array(12).keys()]) {
+    let positive = count[season].positive[index];
+    let negative = count[season].negative[index];
+    let neutral = count[season].neutral[index];
+
+    if (usePercentage) {
+      const total = positive + negative + neutral;
+      positive = Math.round((positive * 100) / total) || 0;
+      negative = Math.round((negative * 100) / total) || 0;
+      neutral = total > 0 ? 100 - positive - negative : 0;
+    }
+
     data.push({
       month: monthLabels[(index + seasonStart) % 12],
-      positive: count[season].positive[index],
-      negative: count[season].negative[index],
-      neutral: count[season].neutral[index],
+      positive,
+      negative,
+      neutral,
     });
   }
 
