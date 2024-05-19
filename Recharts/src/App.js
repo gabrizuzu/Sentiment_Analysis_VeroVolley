@@ -266,6 +266,7 @@ const AreaChartComponent = ({
               angle: -90,
               position: "insideLeft",
               fontSize: getFontSize(width),
+              offset: 10,
             }}
             fontSize={getFontSize(width)}
           />
@@ -525,9 +526,10 @@ const App = () => {
   );
   const [usePostsTimeline, setUsePostsTimeline] = useState(true);
   const [usePercentageTimeline, setUsePercentageTimeline] = useState(false);
-  const [keywordsTimeline, setKeywordsTimeline] = useState(
-    AVAILABLE_KEYWORDS["VeroVolley"]
-  );
+  const [keywordsTimeline, setKeywordsTimeline] = useState([
+    ...AVAILABLE_KEYWORDS["VeroVolley"],
+    "VeroVolley",
+  ]);
 
   const [seasonsRadar, setSeasonsRadar] = useState(availableSeasons);
   const [platformsRadar, setPlatformsRadar] = useState(
