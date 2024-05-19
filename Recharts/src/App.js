@@ -109,9 +109,9 @@ const BarChartComponent = ({
           ref={graphRef}
           data={data}
           margin={{
-            top: 20,
-            right: 30,
-            left: 20,
+            top: getFontSize(width),
+            right: getFontSize(width),
+            left: getFontSize(width),
             bottom: 5,
           }}
         >
@@ -214,9 +214,9 @@ const AreaChartComponent = ({
           ref={graphRef}
           data={data}
           margin={{
-            top: 20,
-            right: 30,
-            left: 20,
+            top: getFontSize(width),
+            right: getFontSize(width),
+            left: getFontSize(width),
             bottom: 5,
           }}
         >
@@ -264,7 +264,7 @@ const AreaChartComponent = ({
             label={{
               value: ylabel,
               angle: -90,
-              position: "insideLeft",
+              position: "left",
               fontSize: getFontSize(width),
               offset: 10,
             }}
