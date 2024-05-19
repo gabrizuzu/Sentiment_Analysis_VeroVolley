@@ -22,6 +22,36 @@ import { getTimelineData } from "./helpers/timelineData";
 import Downloader from "./components/downloader";
 import { AVAILABLE_KEYWORDS } from "./helpers/formatData";
 
+const COLORS = {
+  positive: "#20519F",
+  negative: "#e14547",
+  neutral: "#A8D9FD",
+  Sylla: "#8884d8",
+  Orro: "#82ca9d",
+  Egonu: "#ffc658",
+  Danesi: "#ff7300",
+  Larson: "#ff0000",
+};
+
+const getFontSize = (width) => {
+  return Math.round((width * 24) / 1000) + 1;
+};
+
+const formatter = (width) => {
+  return (value, entry, index) => {
+    return (
+      <span
+        style={{
+          color: COLORS[value],
+          fontSize: getFontSize(width),
+        }}
+      >
+        {value}
+      </span>
+    );
+  };
+};
+
 const BarChartComponent = ({
   ylabel,
   data,
@@ -45,19 +75,47 @@ const BarChartComponent = ({
           <defs>
             <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#6495CE" stopOpacity={1} />
-              <stop offset="10%" stopColor="#20519F" stopOpacity={1} />
-              <stop offset="100%" stopColor="#20519F" stopOpacity={0.8} />
+              <stop
+                offset="10%"
+                stopColor={COLORS["positive"]}
+                stopOpacity={1}
+              />
+              <stop
+                offset="100%"
+                stopColor={COLORS["positive"]}
+                stopOpacity={0.8}
+              />
             </linearGradient>
             <linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
               <stop offset="0%" stopColor="#C58FA2" stopOpacity={1} />
-              <stop offset="10%" stopColor="#A8D9FD" stopOpacity={1} />
-              <stop offset="50%" stopColor="#A8D9FD" stopOpacity={0.7} />
-              <stop offset="90%" stopColor="#A8D9FD" stopOpacity={1} />
+              <stop
+                offset="10%"
+                stopColor={COLORS["neutral"]}
+                stopOpacity={1}
+              />
+              <stop
+                offset="50%"
+                stopColor={COLORS["neutral"]}
+                stopOpacity={0.7}
+              />
+              <stop
+                offset="90%"
+                stopColor={COLORS["neutral"]}
+                stopOpacity={1}
+              />
               <stop offset="100%" stopColor="#6495CE" stopOpacity={1} />
             </linearGradient>
             <linearGradient id="colorAmt" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%" stopColor="#e14547" stopOpacity={0.8} />
-              <stop offset="90%" stopColor="#e14547" stopOpacity={1} />
+              <stop
+                offset="0%"
+                stopColor={COLORS["negative"]}
+                stopOpacity={0.8}
+              />
+              <stop
+                offset="90%"
+                stopColor={COLORS["negative"]}
+                stopOpacity={1}
+              />
               <stop offset="100%" stopColor="#C58FA2" stopOpacity={1} />
             </linearGradient>
             {/* <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
@@ -74,14 +132,22 @@ const BarChartComponent = ({
           </linearGradient> */}
           </defs>
           <CartesianGrid vertical={false} strokeDasharray="3 3" />
-          <XAxis dataKey="month" />
+          <XAxis dataKey="month" fontSize={getFontSize(width)} />
           <YAxis
-            // scale="log"
-            // domain={["auto", "auto"]}
-            label={{ value: ylabel, angle: -90, position: "insideLeft" }}
+            label={{
+              value: ylabel,
+              angle: -90,
+              position: "insideLeft",
+              fontSize: getFontSize(width),
+            }}
+            fontSize={getFontSize(width)}
           />
           <Tooltip />
-          <Legend />
+          <Legend
+            formatter={formatter(width)}
+            iconSize={getFontSize(width) / 2}
+            wrapperStyle={{ paddingTop: getFontSize(width) }}
+          />
           <Bar dataKey="positive" fill="url(#colorUv)" stackId="a" />
           <Bar dataKey="neutral" fill="url(#colorPv)" stackId="a" />
           <Bar dataKey="negative" fill="url(#colorAmt)" stackId="a" />
@@ -113,43 +179,75 @@ const AreaChartComponent = ({
         >
           <defs>
             <linearGradient id="color1" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#20519F" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#20519F" stopOpacity={0} />
+              <stop
+                offset="5%"
+                stopColor={COLORS["positive"]}
+                stopOpacity={0.8}
+              />
+              <stop
+                offset="95%"
+                stopColor={COLORS["positive"]}
+                stopOpacity={0}
+              />
             </linearGradient>
             <linearGradient id="color2" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#e14547" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#e14547" stopOpacity={0} />
+              <stop
+                offset="5%"
+                stopColor={COLORS["negative"]}
+                stopOpacity={0.8}
+              />
+              <stop
+                offset="95%"
+                stopColor={COLORS["negative"]}
+                stopOpacity={0}
+              />
             </linearGradient>
             <linearGradient id="color3" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="5%" stopColor="#A8D9FD" stopOpacity={0.8} />
-              <stop offset="95%" stopColor="#A8D9FD" stopOpacity={0} />
+              <stop
+                offset="5%"
+                stopColor={COLORS["neutral"]}
+                stopOpacity={0.8}
+              />
+              <stop
+                offset="95%"
+                stopColor={COLORS["neutral"]}
+                stopOpacity={0}
+              />
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="month" />
+          <XAxis dataKey="month" fontSize={getFontSize(width)} />
           <YAxis
-            // scale="log"
-            // domain={["auto", "auto"]}
-            label={{ value: ylabel, angle: -90, position: "insideLeft" }}
+            label={{
+              value: ylabel,
+              angle: -90,
+              position: "insideLeft",
+              fontSize: getFontSize(width),
+            }}
+            fontSize={getFontSize(width)}
           />
           <Tooltip />
-          <Legend />
+          <Legend
+            formatter={formatter(width)}
+            iconSize={(getFontSize(width) * 2) / 3}
+            wrapperStyle={{ paddingTop: getFontSize(width) }}
+          />
           <Area
             type="monotone"
             dataKey="positive"
-            stroke="#20519F"
+            stroke={COLORS["positive"]}
             fill="url(#color1)"
           />
           <Area
             type="monotone"
             dataKey="negative"
-            stroke="#e14547"
+            stroke={COLORS["negative"]}
             fill="url(#color2)"
           />
           <Area
             type="monotone"
             dataKey="neutral"
-            stroke="#A8D9FD"
+            stroke={COLORS["neutral"]}
             fill="url(#color3)"
           />
         </AreaChart>
@@ -175,43 +273,41 @@ const RadarChartComponent = ({
           data={data}
         >
           <PolarGrid />
-          <PolarAngleAxis dataKey="subject" fontSize={26} />
+          <PolarAngleAxis
+            dataKey="subject"
+            fontSize={getFontSize(width) * 1.8}
+          />
           <PolarRadiusAxis />
           {/* <Radar
           name="Neutrality"
           dataKey="neutral"
-          stroke="#A8D9FD"
-          fill="#A8D9FD"
+          stroke={COLORS["neutral"]}
+          fill={COLORS["neutral"]}
           fillOpacity={0.6}
         /> */}
           <Radar
             name="Positivity"
             dataKey="positive"
-            stroke="#20519F"
-            fill="#20519F"
+            stroke={COLORS["positive"]}
+            fill={COLORS["positive"]}
             fillOpacity={0.6}
           />
           <Radar
             name="Negativity"
             dataKey="negative"
-            stroke="#e14547"
-            fill="#e14547"
+            stroke={COLORS["negative"]}
+            fill={COLORS["negative"]}
             fillOpacity={0.6}
           />
           <Tooltip />
-          <Legend iconSize={15} />
+          <Legend
+            formatter={formatter(width * 1.8)}
+            iconSize={getFontSize(width)}
+          />
         </RadarChart>
       </ResponsiveContainer>
     </div>
   );
-};
-
-const athletes_colors = {
-  Sylla: "#8884d8",
-  Orro: "#82ca9d",
-  Egonu: "#ffc658",
-  Danesi: "#ff7300",
-  Larson: "#ff0000",
 };
 
 const SingleRadarChartComponent = ({
@@ -245,7 +341,10 @@ const SingleRadarChartComponent = ({
               ref={graphRef}
             >
               <PolarGrid />
-              <PolarAngleAxis dataKey="subject" fontSize={26} />
+              <PolarAngleAxis
+                dataKey="subject"
+                fontSize={getFontSize(width * 2)}
+              />
               <PolarRadiusAxis />
 
               {names.map((name) => (
@@ -253,14 +352,17 @@ const SingleRadarChartComponent = ({
                   key={name}
                   name={name}
                   dataKey={name}
-                  stroke={athletes_colors[name]}
-                  fill={athletes_colors[name]}
+                  stroke={COLORS[name]}
+                  fill={COLORS[name]}
                   fillOpacity={0.6}
                 />
               ))}
 
               <Tooltip />
-              <Legend iconSize={15} />
+              <Legend
+                formatter={formatter(width * 2)}
+                iconSize={getFontSize(width)}
+              />
             </RadarChart>
           </ResponsiveContainer>
         </div>
@@ -285,7 +387,7 @@ const SingleRadarChartComponent = ({
             key={item.subject}
             value={item.subject}
             style={{
-              color: athletes_colors[item.subject],
+              color: COLORS[item.subject],
               display: "inline-block",
               width: 100,
               textAlign: "center",
@@ -339,13 +441,15 @@ const App = () => {
     const season = seasonTimeline.replace("/", "-");
     setTimelineAttrsName(
       `${usePost}_${season}_${platforms}` +
-        (usePercentageTimeline ? "_Percentual" : "")
+        (usePercentageTimeline ? "_Percentual" : "") +
+        (keywordsTimeline.includes("verovolley") ? "_WithVeroVolley" : "")
     );
   }, [
     usePostsTimeline,
     seasonTimeline,
     platformsTimeline,
     usePercentageTimeline,
+    keywordsTimeline,
   ]);
 
   const [radarAttrsName, setRadarAttrsName] = useState("");
