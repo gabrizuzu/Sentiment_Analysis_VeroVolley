@@ -120,9 +120,9 @@ export function countSentimentPosts(platforms) {
 export function getTimelineData(season, platforms, usePosts = true) {
   let count;
   if (usePosts) {
-    count = countSentimentComments(platforms);
-  } else {
     count = countSentimentPosts(platforms);
+  } else {
+    count = countSentimentComments(platforms);
   }
 
   const data = [];
