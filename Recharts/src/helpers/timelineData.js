@@ -51,14 +51,9 @@ export function countSentimentComments(platforms) {
 
     for (const comment of comments) {
       if (!comment.author.includes("verovolley")) {
-        const anno = comment.anno;
+        const season = comment.season;
         const mese = comment.mese - 1;
         const sentiment = comment.sentiment_comment;
-
-        let season = `${anno - 1}/${anno}`;
-        if (mese >= seasonStart) {
-          season = `${anno}/${anno + 1}`;
-        }
 
         if (count[season]) {
           if (sentiment === "positive")
@@ -105,14 +100,9 @@ export function countSentimentPosts(platforms) {
     if (!platforms.includes(post.platform)) {
       continue;
     }
-    const anno = post.anno;
+    const season = post.season;
     const mese = post.mese - 1;
     const sentiment = post.sentiment_post;
-
-    let season = `${anno - 1}/${anno}`;
-    if (mese >= seasonStart) {
-      season = `${anno}/${anno + 1}`;
-    }
 
     if (count[season]) {
       if (sentiment === "positive")

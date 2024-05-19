@@ -484,6 +484,8 @@ def plot_bar_chart_2data(xlabel, ylabel, title, data1, data2, label1, label2):
 #               - giorno
 #               - mese
 #               - anno
+#               - date
+#               - season
 #               - sentiment_post
 #               - nr_like
 #               - nr_comment
@@ -492,157 +494,90 @@ def plot_bar_chart_2data(xlabel, ylabel, title, data1, data2, label1, label2):
 #                   - giorno
 #                   - mese
 #                   - anno
+#                   - date
+#                   - season
 #                   - sentiment_comment
 #                   - nr_like (X WEB IMPOSTATI A 0)
 #                 }
 def process_post(post):
+    platformTemplates = {
+        "IG": {
+            "date": "taken_at_date",
+            "nr_like": "likes_count",
+            "nr_comment": "comments_count",
+            "comment": {
+                "date": "created_at_utc",
+                "author": "username",
+                "nr_like": "like_count",
+            },
+        },
+        "FB": {
+            "date": "date",
+            "nr_like": "num_likes",
+            "nr_comment": "num_comments",
+            "comment": {"date": "date", "author": "author", "nr_like": "likes_num"},
+        },
+        "Web": {
+            "date": "date",
+            "comment": {"date": "created_at_utc", "author": "user"},
+        },
+    }
+
     platform = post["platform"]
+    template = platformTemplates[platform]
+    data_pubblicazione = format_data(post[template["date"]])
+    nr_like = post[template["nr_like"]] if "nr_like" in template else "Not Defined"
+    nr_comment = (
+        post[template["nr_comment"]] if "nr_comment" in template else "Not Defined"
+    )
 
-    # INSTAGRAM
-    if platform == "IG":
-        data_pubblicazione_IG = format_data(post["taken_at_date"])
+    seasonStart = 8  # September
+    season = f"{data_pubblicazione.year-1}/{data_pubblicazione.year}"
+    if data_pubblicazione.month >= seasonStart:
+        season = f"{data_pubblicazione.year}/{data_pubblicazione.year + 1}"
 
-        if "verovolley" in post["source"]:
-            postSing = {
-                "platform": platform,
-                "source": post["source"],
-                "keywords": post["keywords"],
-                "giorno": data_pubblicazione_IG.day,
-                "mese": data_pubblicazione_IG.month,
-                "anno": data_pubblicazione_IG.year,
-                "date": data_pubblicazione_IG.isoformat(),
-                "sentiment_post": "none",
-                "nr_like": post["likes_count"],
-                "nr_comment": post["comments_count"],
-                "comments": [],
+    postSing = {
+        "platform": platform,
+        "source": post["source"],
+        "keywords": post["keywords"],
+        "giorno": data_pubblicazione.day,
+        "mese": data_pubblicazione.month,
+        "anno": data_pubblicazione.year,
+        "date": data_pubblicazione.isoformat(),
+        "season": season,
+        "sentiment_post": (
+            post["sentiment"] if "verovolley" not in post["source"] else "none"
+        ),
+        "nr_like": nr_like,
+        "nr_comment": nr_comment,
+        "comments": [],
+    }
+
+    for comment in post["comments"]:
+        date_comm = format_data(comment[template["comment"]["date"]])
+        author = comment[template["comment"]["author"]]
+        nr_like = (
+            comment[template["comment"]["nr_like"]]
+            if "nr_like" in template["comment"]
+            else "0"
+        )
+
+        season = f"{date_comm.year-1}/{date_comm.year}"
+        if date_comm.month >= seasonStart:
+            season = f"{date_comm.year}/{date_comm.year + 1}"
+
+        postSing["comments"].append(
+            {
+                "author": author,
+                "giorno": date_comm.day,
+                "mese": date_comm.month,
+                "anno": date_comm.year,
+                "date": date_comm.isoformat(),
+                "season": season,
+                "sentiment_comment": comment["sentiment"],
+                "nr_like": nr_like,
             }
-        else:
-            postSing = {
-                "platform": platform,
-                "source": post["source"],
-                "keywords": post["keywords"],
-                "giorno": data_pubblicazione_IG.day,
-                "mese": data_pubblicazione_IG.month,
-                "anno": data_pubblicazione_IG.year,
-                "date": data_pubblicazione_IG.isoformat(),
-                "sentiment_post": post["sentiment"],
-                "nr_like": post["likes_count"],
-                "nr_comment": post["comments_count"],
-                "comments": [],
-            }
-
-        for comment_IG in post.get("comments", []):
-            data_comm_IG = format_data(comment_IG["created_at_utc"])
-
-            comm_IG = {
-                "author": comment_IG["username"],
-                "giorno": data_comm_IG.day,
-                "mese": data_comm_IG.month,
-                "anno": data_comm_IG.year,
-                "date": data_comm_IG.isoformat(),
-                "sentiment_comment": comment_IG["sentiment"],
-                "nr_like": comment_IG["like_count"],
-            }
-
-            postSing["comments"].append(comm_IG)
-
-    # FACEBOOK
-    elif platform == "FB":
-        data_pubblicazione_FB = format_data(post["date"])
-
-        if "verovolley" in post["source"]:
-            postSing = {
-                "platform": platform,
-                "source": post["source"],
-                "keywords": post["keywords"],
-                "giorno": data_pubblicazione_FB.day,
-                "mese": data_pubblicazione_FB.month,
-                "anno": data_pubblicazione_FB.year,
-                "date": data_pubblicazione_FB.isoformat(),
-                "sentiment_post": "none",
-                "nr_like": post["num_likes"],
-                "nr_comment": post["num_comments"],
-                "comments": [],
-            }
-
-        else:
-            postSing = {
-                "platform": platform,
-                "source": post["source"],
-                "keywords": post["keywords"],
-                "giorno": data_pubblicazione_FB.day,
-                "mese": data_pubblicazione_FB.month,
-                "anno": data_pubblicazione_FB.year,
-                "date": data_pubblicazione_FB.isoformat(),
-                "sentiment_post": post["sentiment"],
-                "nr_like": post["num_likes"],
-                "nr_comment": post["num_comments"],
-                "comments": [],
-            }
-
-        for comment_FB in post.get("comments", []):
-            data_comm_FB = format_data(comment_FB["date"])
-
-            comm_FB = {
-                "author": comment_FB["author"],
-                "giorno": data_comm_FB.day,
-                "mese": data_comm_FB.month,
-                "anno": data_comm_FB.year,
-                "date": data_comm_FB.isoformat(),
-                "sentiment_comment": comment_FB["sentiment"],
-                "nr_like": comment_FB["likes_num"],
-            }
-
-            postSing["comments"].append(comm_FB)
-
-    # WEB
-    elif platform == "Web":
-        data_pubblicazione_Web = format_data(post["date"])
-
-        if "verovolley" in post["source"]:
-            postSing = {
-                "platform": platform,
-                "source": post["source"],
-                "keywords": post["keywords"],
-                "giorno": data_pubblicazione_Web.day,
-                "mese": data_pubblicazione_Web.month,
-                "anno": data_pubblicazione_Web.year,
-                "date": data_pubblicazione_Web.isoformat(),
-                "sentiment_post": "none",
-                "nr_like": "Not Defined",
-                "nr_comment": "Not Defined",
-                "comments": [],
-            }
-
-        else:
-            postSing = {
-                "platform": platform,
-                "source": post["source"],
-                "keywords": post["keywords"],
-                "giorno": data_pubblicazione_Web.day,
-                "mese": data_pubblicazione_Web.month,
-                "anno": data_pubblicazione_Web.year,
-                "date": data_pubblicazione_Web.isoformat(),
-                "sentiment_post": post["sentiment"],
-                "nr_like": "Not Defined",
-                "nr_comment": "Not Defined",
-                "comments": [],
-            }
-
-        for comment_Web in post.get("comments", []):
-            data_comm_Web = format_data(comment_Web["created_at_utc"])
-
-            comm_Web = {
-                "author": comment_Web["user"],
-                "giorno": data_comm_Web.day,
-                "mese": data_comm_Web.month,
-                "anno": data_comm_Web.year,
-                "date": data_comm_Web.isoformat(),
-                "sentiment_comment": comment_Web["sentiment"],
-                "nr_like": "0",
-            }
-
-            postSing["comments"].append(comm_Web)
+        )
 
     return postSing
 
