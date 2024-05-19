@@ -313,7 +313,9 @@ const App = () => {
   );
   const [usePostsTimeline, setUsePostsTimeline] = useState(true);
   const [usePercentageTimeline, setUsePercentageTimeline] = useState(false);
-  const [keywords, setKeywords] = useState(AVAILABLE_KEYWORDS[0]);
+  const [keywordsTimeline, setKeywordsTimeline] = useState(
+    AVAILABLE_KEYWORDS["VeroVolley"]
+  );
 
   const [seasonsRadar, setSeasonsRadar] = useState(availableSeasons);
   const [platformsRadar, setPlatformsRadar] = useState(
@@ -324,7 +326,7 @@ const App = () => {
   const timelineData = getTimelineData(
     seasonTimeline,
     platformsTimeline,
-    keywords,
+    keywordsTimeline,
     usePostsTimeline,
     usePercentageTimeline
   );
@@ -401,7 +403,7 @@ const App = () => {
           ))}
         </select>
         <select
-          value={keywords}
+          value={keywordsTimeline}
           onChange={(e) => {
             const selectedKeywords = Array.from(
               e.target.selectedOptions,
@@ -414,7 +416,7 @@ const App = () => {
               }
               newKeywords.push(keyword);
             }
-            setKeywords(newKeywords);
+            setKeywordsTimeline(newKeywords);
           }}
           style={{ width: "100%", fontSize: 26 }}
           multiple={true}
