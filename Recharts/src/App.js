@@ -19,39 +19,47 @@ import {
 
 import getRadarData from "./helpers/radarData";
 import { getTimelineData } from "./helpers/timelineData";
-import moment from "moment";
+import Downloader from "./components/downloader";
 
-const BarChartComponent = ({ xlabel, ylabel, title, data }) => {
+const BarChartComponent = ({
+  ylabel,
+  data,
+  graphRef,
+  height = 400,
+  width = "100%",
+}) => {
   return (
-    <ResponsiveContainer width="100%" height={400}>
-      <BarChart
-        data={data}
-        margin={{
-          top: 20,
-          right: 30,
-          left: 20,
-          bottom: 5,
-        }}
-      >
-        <defs>
-          <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#6495CE" stopOpacity={1} />
-            <stop offset="10%" stopColor="#20519F" stopOpacity={1} />
-            <stop offset="100%" stopColor="#20519F" stopOpacity={0.8} />
-          </linearGradient>
-          <linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#C58FA2" stopOpacity={1} />
-            <stop offset="10%" stopColor="#A8D9FD" stopOpacity={1} />
-            <stop offset="50%" stopColor="#A8D9FD" stopOpacity={0.7} />
-            <stop offset="90%" stopColor="#A8D9FD" stopOpacity={1} />
-            <stop offset="100%" stopColor="#6495CE" stopOpacity={1} />
-          </linearGradient>
-          <linearGradient id="colorAmt" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="0%" stopColor="#e14547" stopOpacity={0.8} />
-            <stop offset="90%" stopColor="#e14547" stopOpacity={1} />
-            <stop offset="100%" stopColor="#C58FA2" stopOpacity={1} />
-          </linearGradient>
-          {/* <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+    <div style={{ border: "1px solid black", width, height }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart
+          ref={graphRef}
+          data={data}
+          margin={{
+            top: 20,
+            right: 30,
+            left: 20,
+            bottom: 5,
+          }}
+        >
+          <defs>
+            <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#6495CE" stopOpacity={1} />
+              <stop offset="10%" stopColor="#20519F" stopOpacity={1} />
+              <stop offset="100%" stopColor="#20519F" stopOpacity={0.8} />
+            </linearGradient>
+            <linearGradient id="colorPv" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#C58FA2" stopOpacity={1} />
+              <stop offset="10%" stopColor="#A8D9FD" stopOpacity={1} />
+              <stop offset="50%" stopColor="#A8D9FD" stopOpacity={0.7} />
+              <stop offset="90%" stopColor="#A8D9FD" stopOpacity={1} />
+              <stop offset="100%" stopColor="#6495CE" stopOpacity={1} />
+            </linearGradient>
+            <linearGradient id="colorAmt" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="0%" stopColor="#e14547" stopOpacity={0.8} />
+              <stop offset="90%" stopColor="#e14547" stopOpacity={1} />
+              <stop offset="100%" stopColor="#C58FA2" stopOpacity={1} />
+            </linearGradient>
+            {/* <linearGradient id="colorUv" x1="0" y1="0" x2="0" y2="1">
             <stop offset="50%" stopColor="#20519F" stopOpacity={1} />
             <stop offset="100%" stopColor="#20519F" stopOpacity={0.2} />
           </linearGradient>
@@ -63,114 +71,137 @@ const BarChartComponent = ({ xlabel, ylabel, title, data }) => {
             <stop offset="50%" stopColor="#e14547" stopOpacity={1} />
             <stop offset="100%" stopColor="#e14547" stopOpacity={0.2} />
           </linearGradient> */}
-        </defs>
-        <CartesianGrid vertical={false} strokeDasharray="3 3" />
-        <XAxis dataKey="month" />
-        <YAxis
-          // scale="log"
-          // domain={["auto", "auto"]}
-          label={{ value: ylabel, angle: -90, position: "insideLeft" }}
-        />
-        <Tooltip />
-        <Legend />
-        <Bar dataKey="positive" fill="url(#colorUv)" stackId="a" />
-        <Bar dataKey="neutral" fill="url(#colorPv)" stackId="a" />
-        <Bar dataKey="negative" fill="url(#colorAmt)" stackId="a" />
-      </BarChart>
-    </ResponsiveContainer>
+          </defs>
+          <CartesianGrid vertical={false} strokeDasharray="3 3" />
+          <XAxis dataKey="month" />
+          <YAxis
+            // scale="log"
+            // domain={["auto", "auto"]}
+            label={{ value: ylabel, angle: -90, position: "insideLeft" }}
+          />
+          <Tooltip />
+          <Legend />
+          <Bar dataKey="positive" fill="url(#colorUv)" stackId="a" />
+          <Bar dataKey="neutral" fill="url(#colorPv)" stackId="a" />
+          <Bar dataKey="negative" fill="url(#colorAmt)" stackId="a" />
+        </BarChart>
+      </ResponsiveContainer>
+    </div>
   );
 };
 
-const AreaChartComponent = ({ xlabel, ylabel, title, data }) => {
+const AreaChartComponent = ({
+  ylabel,
+  data,
+  graphRef,
+  height = 400,
+  width = "100%",
+}) => {
   return (
-    <ResponsiveContainer width="100%" height={400}>
-      <AreaChart
-        data={data}
-        margin={{
-          top: 20,
-          right: 30,
-          left: 20,
-          bottom: 5,
-        }}
-      >
-        <defs>
-          <linearGradient id="color1" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#20519F" stopOpacity={0.8} />
-            <stop offset="95%" stopColor="#20519F" stopOpacity={0} />
-          </linearGradient>
-          <linearGradient id="color2" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#e14547" stopOpacity={0.8} />
-            <stop offset="95%" stopColor="#e14547" stopOpacity={0} />
-          </linearGradient>
-          <linearGradient id="color3" x1="0" y1="0" x2="0" y2="1">
-            <stop offset="5%" stopColor="#A8D9FD" stopOpacity={0.8} />
-            <stop offset="95%" stopColor="#A8D9FD" stopOpacity={0} />
-          </linearGradient>
-        </defs>
-        <CartesianGrid strokeDasharray="3 3" />
-        <XAxis dataKey="month" />
-        <YAxis
-          // scale="log"
-          // domain={["auto", "auto"]}
-          label={{ value: ylabel, angle: -90, position: "insideLeft" }}
-        />
-        <Tooltip />
-        <Legend />
-        <Area
-          type="monotone"
-          dataKey="positive"
-          stroke="#20519F"
-          fill="url(#color1)"
-        />
-        <Area
-          type="monotone"
-          dataKey="negative"
-          stroke="#e14547"
-          fill="url(#color2)"
-        />
-        <Area
-          type="monotone"
-          dataKey="neutral"
-          stroke="#A8D9FD"
-          fill="url(#color3)"
-        />
-      </AreaChart>
-    </ResponsiveContainer>
+    <div style={{ border: "1px solid black", width, height }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <AreaChart
+          ref={graphRef}
+          data={data}
+          margin={{
+            top: 20,
+            right: 30,
+            left: 20,
+            bottom: 5,
+          }}
+        >
+          <defs>
+            <linearGradient id="color1" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#20519F" stopOpacity={0.8} />
+              <stop offset="95%" stopColor="#20519F" stopOpacity={0} />
+            </linearGradient>
+            <linearGradient id="color2" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#e14547" stopOpacity={0.8} />
+              <stop offset="95%" stopColor="#e14547" stopOpacity={0} />
+            </linearGradient>
+            <linearGradient id="color3" x1="0" y1="0" x2="0" y2="1">
+              <stop offset="5%" stopColor="#A8D9FD" stopOpacity={0.8} />
+              <stop offset="95%" stopColor="#A8D9FD" stopOpacity={0} />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis dataKey="month" />
+          <YAxis
+            // scale="log"
+            // domain={["auto", "auto"]}
+            label={{ value: ylabel, angle: -90, position: "insideLeft" }}
+          />
+          <Tooltip />
+          <Legend />
+          <Area
+            type="monotone"
+            dataKey="positive"
+            stroke="#20519F"
+            fill="url(#color1)"
+          />
+          <Area
+            type="monotone"
+            dataKey="negative"
+            stroke="#e14547"
+            fill="url(#color2)"
+          />
+          <Area
+            type="monotone"
+            dataKey="neutral"
+            stroke="#A8D9FD"
+            fill="url(#color3)"
+          />
+        </AreaChart>
+      </ResponsiveContainer>
+    </div>
   );
 };
 
-const RadarChartComponent = ({ data }) => {
+const RadarChartComponent = ({
+  data,
+  graphRef,
+  height = 400,
+  width = "100%",
+}) => {
   return (
-    <ResponsiveContainer width="100%" height={400}>
-      <RadarChart cx="50%" cy="50%" outerRadius="80%" data={data}>
-        <PolarGrid />
-        <PolarAngleAxis dataKey="subject" fontSize={26} />
-        <PolarRadiusAxis />
-        {/* <Radar
+    <div style={{ border: "1px solid black", width, height }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <RadarChart
+          ref={graphRef}
+          cx="50%"
+          cy="50%"
+          outerRadius="80%"
+          data={data}
+        >
+          <PolarGrid />
+          <PolarAngleAxis dataKey="subject" fontSize={26} />
+          <PolarRadiusAxis />
+          {/* <Radar
           name="Neutrality"
           dataKey="neutral"
           stroke="#A8D9FD"
           fill="#A8D9FD"
           fillOpacity={0.6}
         /> */}
-        <Radar
-          name="Positivity"
-          dataKey="positive"
-          stroke="#20519F"
-          fill="#20519F"
-          fillOpacity={0.6}
-        />
-        <Radar
-          name="Negativity"
-          dataKey="negative"
-          stroke="#e14547"
-          fill="#e14547"
-          fillOpacity={0.6}
-        />
-        <Tooltip />
-        <Legend iconSize={15} />
-      </RadarChart>
-    </ResponsiveContainer>
+          <Radar
+            name="Positivity"
+            dataKey="positive"
+            stroke="#20519F"
+            fill="#20519F"
+            fillOpacity={0.6}
+          />
+          <Radar
+            name="Negativity"
+            dataKey="negative"
+            stroke="#e14547"
+            fill="#e14547"
+            fillOpacity={0.6}
+          />
+          <Tooltip />
+          <Legend iconSize={15} />
+        </RadarChart>
+      </ResponsiveContainer>
+    </div>
   );
 };
 
@@ -182,7 +213,12 @@ const athletes_colors = {
   larson: "#ff0000",
 };
 
-const SingleRadarChartComponent = ({ data }) => {
+const SingleRadarChartComponent = ({
+  data,
+  graphRef,
+  height = 400,
+  width = "100%",
+}) => {
   const invertedData = ["positive", "negative", "neutral"].map((key) => {
     const item = {
       subject: key,
@@ -196,7 +232,38 @@ const SingleRadarChartComponent = ({ data }) => {
   const [names, setNames] = React.useState([data[0].subject]);
 
   return (
-    <div style={{ width: "100%" }}>
+    <>
+      <div style={{ display: "flex", width: "100%", justifyContent: "center" }}>
+        <div style={{ border: "1px solid black", width, height }}>
+          <ResponsiveContainer width="100%" height="100%">
+            <RadarChart
+              cx="50%"
+              cy="50%"
+              outerRadius="80%"
+              data={invertedData}
+              ref={graphRef}
+            >
+              <PolarGrid />
+              <PolarAngleAxis dataKey="subject" fontSize={26} />
+              <PolarRadiusAxis />
+
+              {names.map((name) => (
+                <Radar
+                  key={name}
+                  name={name}
+                  dataKey={name}
+                  stroke={athletes_colors[name]}
+                  fill={athletes_colors[name]}
+                  fillOpacity={0.6}
+                />
+              ))}
+
+              <Tooltip />
+              <Legend iconSize={15} />
+            </RadarChart>
+          </ResponsiveContainer>
+        </div>
+      </div>
       <select
         value={names}
         onChange={(e) =>
@@ -204,37 +271,30 @@ const SingleRadarChartComponent = ({ data }) => {
             Array.from(e.target.selectedOptions, (option) => option.value)
           )
         }
-        style={{ width: "100%", fontSize: 26 }}
+        style={{
+          width: "600px",
+          height: "50px",
+          fontSize: 26,
+        }}
         multiple={true}
+        size={1}
       >
         {data.map((item) => (
-          <option key={item.subject} value={item.subject}>
+          <option
+            key={item.subject}
+            value={item.subject}
+            style={{
+              color: athletes_colors[item.subject],
+              display: "inline-block",
+              width: 100,
+              textAlign: "center",
+            }}
+          >
             {item.subject}
           </option>
         ))}
       </select>
-      <ResponsiveContainer width="100%" height={400}>
-        <RadarChart cx="50%" cy="50%" outerRadius="80%" data={invertedData}>
-          <PolarGrid />
-          <PolarAngleAxis dataKey="subject" fontSize={26} />
-          <PolarRadiusAxis />
-
-          {names.map((name) => (
-            <Radar
-              key={name}
-              name={name}
-              dataKey={name}
-              stroke={athletes_colors[name]}
-              fill={athletes_colors[name]}
-              fillOpacity={0.6}
-            />
-          ))}
-
-          <Tooltip />
-          <Legend iconSize={15} />
-        </RadarChart>
-      </ResponsiveContainer>
-    </div>
+    </>
   );
 };
 
@@ -250,6 +310,7 @@ const App = () => {
   const [platforms, setPlatforms] = useState(
     Object.values(availablePlatforms).map((p) => p.key)
   );
+  const [usePosts, setUsePosts] = useState(true);
 
   const timelineDataPosts = getTimelineData(season, platforms);
   const timelineDataComments = getTimelineData(season, platforms, true);
@@ -286,52 +347,38 @@ const App = () => {
           ))}
         </select>
       </div>
-      <h1>Sentiment Comments Graph</h1>
-      <div style={{ display: "flex", width: "100%" }}>
-        <div style={{ width: "50%" }}>
-          <BarChartComponent
-            xlabel="Month"
-            ylabel="Comments"
-            title="Sample Bar Chart"
-            data={timelineDataComments}
-          />
-        </div>
-        <div style={{ width: "50%" }}>
-          <AreaChartComponent
-            xlabel="Months"
-            ylabel="Comments"
-            title="Sample Bar Chart"
-            data={timelineDataComments}
-          />
-        </div>
-      </div>
-      <h1>Sentiment Posts Graph</h1>
-      <div style={{ display: "flex", width: "100%" }}>
-        <div style={{ width: "50%" }}>
-          <BarChartComponent
-            xlabel="Month"
-            ylabel="Posts"
-            title="Sample Bar Chart"
-            data={timelineDataPosts}
-          />
-        </div>
-        <div style={{ width: "50%" }}>
-          <AreaChartComponent
-            xlabel="Months"
-            ylabel="Posts"
-            title="Sample Bar Chart"
-            data={timelineDataPosts}
-          />
-        </div>
-      </div>
 
-      <div style={{ display: "flex", width: "60%", margin: "auto" }}>
-        <RadarChartComponent data={radarData} />
-        <SingleRadarChartComponent
-          data={radarData}
-          name={radarData[0].subject}
-        />
+      <div style={{ display: "flex", gap: 20 }}>
+        <h1>{usePosts ? "Posts" : "Comments"} Sentiment Timelines</h1>
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+          }}
+        >
+          <button onClick={() => setUsePosts(!usePosts)}>
+            {usePosts ? "Change To Comments" : "Change To Posts"}
+          </button>
+        </div>
       </div>
+      <Downloader
+        data={usePosts ? timelineDataPosts : timelineDataComments}
+        ChartComponent={BarChartComponent}
+        props={{
+          ylabel: "Comments",
+        }}
+      />
+      <Downloader
+        data={usePosts ? timelineDataPosts : timelineDataComments}
+        ChartComponent={AreaChartComponent}
+        props={{
+          ylabel: "Comments",
+        }}
+      />
+
+      <h1>Athletes Sentiment Radar</h1>
+      <Downloader data={radarData} ChartComponent={RadarChartComponent} />
+      <Downloader data={radarData} ChartComponent={SingleRadarChartComponent} />
     </div>
   );
 };

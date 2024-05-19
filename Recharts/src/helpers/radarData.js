@@ -1,6 +1,7 @@
-import posts from "../data/sentiment_output.json";
+import getProcessedPosts from "./formatData";
 
 function getRadarData() {
+  const posts = getProcessedPosts();
   const sentiments = ["positive", "negative", "neutral"];
   const keywords = ["sylla", "orro", "egonu", "danesi", "larson"];
   const data = {};
@@ -23,10 +24,10 @@ function getRadarData() {
     for (const keyword of keywords) {
       if (post.keywords.includes(keyword)) {
         for (const comment of post.comments) {
-          if (!sentiments.includes(comment.sentiment)) {
+          if (!sentiments.includes(comment.sentiment_comment)) {
             continue;
           }
-          data[keyword][comment.sentiment] += 1;
+          data[keyword][comment.sentiment_comment] += 1;
           total_comments[keyword] += 1;
         }
       }
@@ -38,8 +39,9 @@ function getRadarData() {
   for (const [keyword, value] of Object.entries(data)) {
     const subdata = { subject: keyword, fullMark: 100 };
     for (const sentiment of sentiments) {
-      subdata[sentiment] =
-        (data[keyword][sentiment] * 100) / total_comments[keyword];
+      subdata[sentiment] = Math.round(
+        (data[keyword][sentiment] * 100) / total_comments[keyword]
+      );
     }
     final_data.push(subdata);
   }
