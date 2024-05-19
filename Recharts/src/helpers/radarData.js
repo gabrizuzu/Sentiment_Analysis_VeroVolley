@@ -1,6 +1,6 @@
 import getProcessedPosts from "./formatData";
 
-function getRadarData(usePosts) {
+function getRadarData(seasons, platforms, usePosts) {
   const posts = getProcessedPosts();
   const sentiments = ["positive", "negative", "neutral"];
   const keywords = ["sylla", "orro", "egonu", "danesi", "larson"];
@@ -21,6 +21,12 @@ function getRadarData(usePosts) {
   }
 
   for (const post of posts) {
+    if (
+      !platforms.includes(post.platform) ||
+      (usePosts && !seasons.includes(post.season))
+    ) {
+      continue;
+    }
     for (const keyword of keywords) {
       if (post.keywords.includes(keyword)) {
         if (usePosts) {
@@ -28,7 +34,10 @@ function getRadarData(usePosts) {
           total_comments[keyword] += 1;
         } else {
           for (const comment of post.comments) {
-            if (!sentiments.includes(comment.sentiment_comment)) {
+            if (
+              !sentiments.includes(comment.sentiment_comment) ||
+              !seasons.includes(comment.season)
+            ) {
               continue;
             }
             data[keyword][comment.sentiment_comment] += 1;

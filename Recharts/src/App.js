@@ -306,16 +306,24 @@ const App = () => {
   ];
   const availableSeasons = ["2023/2024", "2022/2023", "2021/2022", "2020/2021"];
 
-  const [season, setSeasons] = useState(availableSeasons[0]);
-  const [platforms, setPlatforms] = useState(
+  const [seasonTimeline, setSeasonTimeline] = useState(availableSeasons[0]);
+  const [platformsTimeline, setPlatformsTimeline] = useState(
     Object.values(availablePlatforms).map((p) => p.key)
   );
   const [usePostsTimeline, setUsePostsTimeline] = useState(true);
+
+  const [seasonsRadar, setSeasonsRadar] = useState(availableSeasons);
+  const [platformsRadar, setPlatformsRadar] = useState(
+    Object.values(availablePlatforms).map((p) => p.key)
+  );
   const [usePostsRadar, setUsePostsRadar] = useState(true);
 
-  const timelineDataPosts = getTimelineData(season, platforms);
-  const timelineDataComments = getTimelineData(season, platforms, true);
-  const radarData = getRadarData(usePostsRadar);
+  const timelineData = getTimelineData(
+    seasonTimeline,
+    platformsTimeline,
+    usePostsTimeline
+  );
+  const radarData = getRadarData(seasonsRadar, platformsRadar, usePostsRadar);
 
   return (
     <div>
@@ -334,8 +342,8 @@ const App = () => {
       </div>
       <div style={{ display: "flex", width: "50%", margin: "auto", gap: 50 }}>
         <select
-          value={season}
-          onChange={(e) => setSeasons(e.target.value)}
+          value={seasonTimeline}
+          onChange={(e) => setSeasonTimeline(e.target.value)}
           style={{ width: "100%", fontSize: 26, textAlign: "center" }}
         >
           {availableSeasons.map((s) => (
@@ -345,9 +353,9 @@ const App = () => {
           ))}
         </select>
         <select
-          value={platforms}
+          value={platformsTimeline}
           onChange={(e) =>
-            setPlatforms(
+            setPlatformsTimeline(
               Array.from(e.target.selectedOptions, (option) => option.value)
             )
           }
@@ -361,15 +369,16 @@ const App = () => {
           ))}
         </select>
       </div>
+
       <Downloader
-        data={usePostsTimeline ? timelineDataPosts : timelineDataComments}
+        data={timelineData}
         ChartComponent={BarChartComponent}
         props={{
           ylabel: "Comments",
         }}
       />
       <Downloader
-        data={usePostsTimeline ? timelineDataPosts : timelineDataComments}
+        data={timelineData}
         ChartComponent={AreaChartComponent}
         props={{
           ylabel: "Comments",
@@ -379,7 +388,7 @@ const App = () => {
       <div style={{ display: "flex", gap: 20 }}>
         <h1>
           Athletes Percentage of Sentiment by{" "}
-          {usePostsTimeline ? "Posts" : "Comments"}
+          {usePostsRadar ? "Posts" : "Comments"}
         </h1>
         <div
           style={{
@@ -388,9 +397,43 @@ const App = () => {
           }}
         >
           <button onClick={() => setUsePostsRadar(!usePostsRadar)}>
-            {usePostsTimeline ? "Change To Comments" : "Change To Posts"}
+            {usePostsRadar ? "Change To Comments" : "Change To Posts"}
           </button>
         </div>
+      </div>
+      <div style={{ display: "flex", width: "50%", margin: "auto", gap: 50 }}>
+        <select
+          value={seasonsRadar}
+          onChange={(e) =>
+            setSeasonsRadar(
+              Array.from(e.target.selectedOptions, (option) => option.value)
+            )
+          }
+          style={{ width: "100%", fontSize: 26, textAlign: "center" }}
+          multiple={true}
+        >
+          {availableSeasons.map((s) => (
+            <option key={s} value={s}>
+              {s}
+            </option>
+          ))}
+        </select>
+        <select
+          value={platformsRadar}
+          onChange={(e) =>
+            setPlatformsRadar(
+              Array.from(e.target.selectedOptions, (option) => option.value)
+            )
+          }
+          style={{ width: "100%", fontSize: 26 }}
+          multiple={true}
+        >
+          {availablePlatforms.map((p) => (
+            <option key={p.key} value={p.key}>
+              {p.name}
+            </option>
+          ))}
+        </select>
       </div>
       <Downloader data={radarData} ChartComponent={RadarChartComponent} />
       <Downloader data={radarData} ChartComponent={SingleRadarChartComponent} />

@@ -531,10 +531,10 @@ def process_post(post):
         post[template["nr_comment"]] if "nr_comment" in template else "Not Defined"
     )
 
-    seasonStart = 8  # September
-    season = f"{data_pubblicazione.year-1}/{data_pubblicazione.year}"
+    seasonStart = 9  # September
+    post_season = f"{data_pubblicazione.year-1}/{data_pubblicazione.year}"
     if data_pubblicazione.month >= seasonStart:
-        season = f"{data_pubblicazione.year}/{data_pubblicazione.year + 1}"
+        post_season = f"{data_pubblicazione.year}/{data_pubblicazione.year + 1}"
 
     postSing = {
         "platform": platform,
@@ -544,7 +544,7 @@ def process_post(post):
         "mese": data_pubblicazione.month,
         "anno": data_pubblicazione.year,
         "date": data_pubblicazione.isoformat(),
-        "season": season,
+        "season": post_season,
         "sentiment_post": (
             post["sentiment"] if "verovolley" not in post["source"] else "none"
         ),
@@ -562,9 +562,9 @@ def process_post(post):
             else "0"
         )
 
-        season = f"{date_comm.year-1}/{date_comm.year}"
+        comment_season = f"{date_comm.year-1}/{date_comm.year}"
         if date_comm.month >= seasonStart:
-            season = f"{date_comm.year}/{date_comm.year + 1}"
+            comment_season = f"{date_comm.year}/{date_comm.year + 1}"
 
         postSing["comments"].append(
             {
@@ -573,7 +573,7 @@ def process_post(post):
                 "mese": date_comm.month,
                 "anno": date_comm.year,
                 "date": date_comm.isoformat(),
-                "season": season,
+                "season": comment_season,
                 "sentiment_comment": comment["sentiment"],
                 "nr_like": nr_like,
             }
