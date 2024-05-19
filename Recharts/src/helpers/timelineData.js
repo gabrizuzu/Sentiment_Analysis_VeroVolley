@@ -114,10 +114,6 @@ export function countSentimentPosts(platforms) {
       season = `${anno}/${anno + 1}`;
     }
 
-    if (anno == 2024 && mese >= 5) {
-      console.log(post);
-    }
-
     if (count[season]) {
       if (sentiment === "positive")
         count[season].positive[(mese + 12 - seasonStart) % 12] += 1;
