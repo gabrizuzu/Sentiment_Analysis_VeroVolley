@@ -20,6 +20,7 @@ import {
 import getRadarData from "./helpers/radarData";
 import { getTimelineData } from "./helpers/timelineData";
 import Downloader from "./components/downloader";
+import { AVAILABLE_KEYWORDS } from "./helpers/formatData";
 
 const BarChartComponent = ({
   ylabel,
@@ -311,17 +312,19 @@ const App = () => {
     Object.values(availablePlatforms).map((p) => p.key)
   );
   const [usePostsTimeline, setUsePostsTimeline] = useState(true);
+  const [usePercentageTimeline, setUsePercentageTimeline] = useState(false);
+  const [keywords, setKeywords] = useState(AVAILABLE_KEYWORDS[0]);
 
   const [seasonsRadar, setSeasonsRadar] = useState(availableSeasons);
   const [platformsRadar, setPlatformsRadar] = useState(
     Object.values(availablePlatforms).map((p) => p.key)
   );
   const [usePostsRadar, setUsePostsRadar] = useState(true);
-  const [usePercentageTimeline, setUsePercentageTimeline] = useState(false);
 
   const timelineData = getTimelineData(
     seasonTimeline,
     platformsTimeline,
+    keywords,
     usePostsTimeline,
     usePercentageTimeline
   );
@@ -394,6 +397,31 @@ const App = () => {
           {availablePlatforms.map((p) => (
             <option key={p.key} value={p.key}>
               {p.name}
+            </option>
+          ))}
+        </select>
+        <select
+          value={keywords}
+          onChange={(e) => {
+            const selectedKeywords = Array.from(
+              e.target.selectedOptions,
+              (option) => option.value
+            );
+            const newKeywords = [];
+            for (const keyword of selectedKeywords) {
+              if (AVAILABLE_KEYWORDS[keyword]) {
+                newKeywords.push(...AVAILABLE_KEYWORDS[keyword]);
+              }
+              newKeywords.push(keyword);
+            }
+            setKeywords(newKeywords);
+          }}
+          style={{ width: "100%", fontSize: 26 }}
+          multiple={true}
+        >
+          {Object.keys(AVAILABLE_KEYWORDS).map((p) => (
+            <option key={p} value={p}>
+              {p}
             </option>
           ))}
         </select>

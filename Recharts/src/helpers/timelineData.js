@@ -18,7 +18,7 @@ const monthLabels = [
 const seasonStart = 8;
 
 // - Comments
-export function countSentimentComments(platforms) {
+export function countSentimentComments(platforms, keywords) {
   const posts = getProcessedPosts();
   const count = {
     "2020/2021": {
@@ -44,7 +44,10 @@ export function countSentimentComments(platforms) {
   };
 
   for (const post of posts) {
-    if (!platforms.includes(post.platform)) {
+    if (
+      !platforms.includes(post.platform) ||
+      !keywords.some((keyword) => post.keywords.includes(keyword))
+    ) {
       continue;
     }
     const comments = post.comments || [];
@@ -71,7 +74,7 @@ export function countSentimentComments(platforms) {
 }
 
 // - Posts
-export function countSentimentPosts(platforms) {
+export function countSentimentPosts(platforms, keywords) {
   const posts = getProcessedPosts();
   const count = {
     "2020/2021": {
@@ -97,7 +100,10 @@ export function countSentimentPosts(platforms) {
   };
 
   for (const post of posts) {
-    if (!platforms.includes(post.platform)) {
+    if (
+      !platforms.includes(post.platform) ||
+      !keywords.some((keyword) => post.keywords.includes(keyword))
+    ) {
       continue;
     }
     const season = post.season;
@@ -120,14 +126,15 @@ export function countSentimentPosts(platforms) {
 export function getTimelineData(
   season,
   platforms,
+  keywords,
   usePosts = true,
   usePercentage = false
 ) {
   let count;
   if (usePosts) {
-    count = countSentimentPosts(platforms);
+    count = countSentimentPosts(platforms, keywords);
   } else {
-    count = countSentimentComments(platforms);
+    count = countSentimentComments(platforms, keywords);
   }
 
   const data = [];
