@@ -56,7 +56,7 @@ export default function Downloader({
     // Verify that png is not undefined
     if (png) {
       // Download with FileSaver
-      FileSaver.saveAs(png, "myChart.png");
+      FileSaver.saveAs(png, `${name}.png`);
     } else {
       console.log("No png found.");
     }
