@@ -51,26 +51,15 @@ function getRadarData(seasons, platforms, usePosts) {
   const final_data = [];
 
   for (const [keyword, value] of Object.entries(data)) {
-    const subdata = { subject: keyword, fullMark: 100 };
+    const subdata = { subject: keyword };
     for (const sentiment of sentiments) {
       subdata[sentiment] = Math.round(
         (data[keyword][sentiment] * 100) / total_comments[keyword]
       );
     }
+    subdata.subject = keyword.charAt(0).toUpperCase() + keyword.slice(1);
     final_data.push(subdata);
   }
-
-  //   const inverted_data = [];
-
-  //   for (const sentiment of sentiments) {
-  //     const subdata = { subject: sentiment, fullMark: 100 };
-  //     for (const keyword of keywords) {
-  //       subdata[keyword] =
-  //         (data[keyword][sentiment] * 100) / total_comments[keyword];
-  //     }
-  //     inverted_data.push(subdata);
-  //   }
-
   return final_data;
 }
 

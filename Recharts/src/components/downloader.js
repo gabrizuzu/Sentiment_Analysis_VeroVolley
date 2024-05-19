@@ -1,8 +1,43 @@
 import React, { useCallback, useState } from "react";
 import { useCurrentPng } from "recharts-to-png";
 import FileSaver from "file-saver";
+import uuid from "uuid";
 
-export default function Downloader({ data, props, ChartComponent }) {
+function dataToCSV(data, xAxisLabel) {
+  if (!data.length) {
+    return "";
+  }
+
+  let csv = "";
+  const separator = ";";
+
+  // Set header
+  const header = Object.keys(data[0]);
+  header.splice(header.indexOf(xAxisLabel), 1);
+  header.unshift(xAxisLabel);
+
+  for (const key of header) {
+    csv += key.charAt(0).toUpperCase() + key.slice(1) + separator;
+  }
+  csv = csv.slice(0, csv.length - 1) + "\n";
+
+  // Set data
+  for (const row of data) {
+    for (const key of header) {
+      csv += row[key] + separator;
+    }
+    csv = csv.slice(0, csv.length - 1) + "\n";
+  }
+  return csv;
+}
+
+export default function Downloader({
+  name,
+  xAxisLabel,
+  data,
+  props,
+  ChartComponent,
+}) {
   // useCurrentPng usage (isLoading is optional)
   const [getPng, { ref, isLoading }] = useCurrentPng();
 
@@ -26,6 +61,14 @@ export default function Downloader({ data, props, ChartComponent }) {
       console.log("No png found.");
     }
   }, [getPng]);
+
+  const handleCSVDownload = useCallback(async () => {
+    console.log("Downloading...");
+    const csvData = new Blob([dataToCSV(data, xAxisLabel)], {
+      type: "text/csv",
+    });
+    FileSaver.saveAs(csvData, `${name}.csv`);
+  });
 
   return (
     <div style={{ marginTop: 20, marginBottom: 20 }}>
@@ -89,6 +132,7 @@ export default function Downloader({ data, props, ChartComponent }) {
         <button onClick={handleDownload}>
           {isLoading ? "Downloading..." : "Download Chart"}
         </button>
+        <button onClick={handleCSVDownload}>Download CSV data</button>
       </div>
     </div>
   );

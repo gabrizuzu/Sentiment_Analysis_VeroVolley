@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -206,11 +206,11 @@ const RadarChartComponent = ({
 };
 
 const athletes_colors = {
-  sylla: "#8884d8",
-  orro: "#82ca9d",
-  egonu: "#ffc658",
-  danesi: "#ff7300",
-  larson: "#ff0000",
+  Sylla: "#8884d8",
+  Orro: "#82ca9d",
+  Egonu: "#ffc658",
+  Danesi: "#ff7300",
+  Larson: "#ff0000",
 };
 
 const SingleRadarChartComponent = ({
@@ -325,6 +325,25 @@ const App = () => {
   );
   const radarData = getRadarData(seasonsRadar, platformsRadar, usePostsRadar);
 
+  const [timelineAttrsName, setTimelineAttrsName] = useState("");
+  useEffect(() => {
+    const usePost = usePostsTimeline ? "Posts" : "Comments";
+    const platforms = "[" + platformsTimeline.join(",") + "]";
+    const season = seasonTimeline.replace("/", "-");
+    setTimelineAttrsName(`${usePost}_${season}_${platforms}`);
+  }, [usePostsTimeline, seasonTimeline, platformsTimeline]);
+
+  const [radarAttrsName, setRadarAttrsName] = useState("");
+  useEffect(() => {
+    const usePost = usePostsRadar ? "Posts" : "Comments";
+    const platforms = "[" + platformsRadar.join(",") + "]";
+    const seasons =
+      "[" +
+      seasonsRadar.map((value) => value.replace("/", "-")).join(",") +
+      "]";
+    setRadarAttrsName(`${usePost}_${seasons}_${platforms}`);
+  }, [usePostsRadar, seasonsRadar, platformsRadar]);
+
   return (
     <div>
       <div style={{ display: "flex", gap: 20 }}>
@@ -372,6 +391,8 @@ const App = () => {
 
       <Downloader
         data={timelineData}
+        name={`Bar_${timelineAttrsName}`}
+        xAxisLabel="month"
         ChartComponent={BarChartComponent}
         props={{
           ylabel: "Comments",
@@ -379,6 +400,8 @@ const App = () => {
       />
       <Downloader
         data={timelineData}
+        name={`Area_${timelineAttrsName}`}
+        xAxisLabel="month"
         ChartComponent={AreaChartComponent}
         props={{
           ylabel: "Comments",
@@ -435,8 +458,18 @@ const App = () => {
           ))}
         </select>
       </div>
-      <Downloader data={radarData} ChartComponent={RadarChartComponent} />
-      <Downloader data={radarData} ChartComponent={SingleRadarChartComponent} />
+      <Downloader
+        data={radarData}
+        name={`Radar_${radarAttrsName}`}
+        xAxisLabel="subject"
+        ChartComponent={RadarChartComponent}
+      />
+      <Downloader
+        data={radarData}
+        name={`SingleRadar_${radarAttrsName}`}
+        xAxisLabel="subject"
+        ChartComponent={SingleRadarChartComponent}
+      />
     </div>
   );
 };
