@@ -19,6 +19,7 @@ import {
 
 import getRadarData from "./helpers/radarData";
 import { getTimelineData } from "./helpers/timelineData";
+import moment from "moment";
 
 const BarChartComponent = ({ xlabel, ylabel, title, data }) => {
   return (
