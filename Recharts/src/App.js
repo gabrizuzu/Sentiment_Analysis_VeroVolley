@@ -15,12 +15,19 @@ import {
   PolarGrid,
   RadarChart,
   Area,
+  PieChart,
+  Pie,
+  Cell,
 } from "recharts";
 
 import getRadarData from "./helpers/radarData";
+import {
+  getPiePlatformDistributionData,
+  getPieSentimentData,
+} from "./helpers/pieData";
 import { getTimelineData } from "./helpers/timelineData";
 import Downloader from "./components/downloader";
-import { AVAILABLE_KEYWORDS } from "./helpers/formatData";
+import { AVAILABLE_KEYWORDS, AVAILABLE_PLATFORMS } from "./helpers/formatData";
 
 const COLORS = {
   quantity: "#A3A3A3",
@@ -32,6 +39,9 @@ const COLORS = {
   Egonu: "#ffc658",
   Danesi: "#ff7300",
   Larson: "#ff0000",
+  Facebook: "#1877F2",
+  Instagram: "#de3ab7",
+  Web: "#66CDAA",
 };
 
 const getFontSize = (width) => {
@@ -49,6 +59,38 @@ const formatter = (width) => {
       >
         {value}
       </span>
+    );
+  };
+};
+
+const renderCustomizedPieLabel = (width) => {
+  return ({
+    cx,
+    cy,
+    midAngle,
+    innerRadius,
+    outerRadius,
+    percent,
+    value,
+    name,
+  }) => {
+    const RADIAN = Math.PI / 180;
+    const radius =
+      25 + innerRadius + (outerRadius - innerRadius) + getFontSize(width) / 2;
+    const x = cx + radius * Math.cos(-midAngle * RADIAN);
+    const y = cy + radius * Math.sin(-midAngle * RADIAN);
+
+    return (
+      <text
+        x={x}
+        y={y}
+        fill={COLORS[name]}
+        textAnchor={x > cx ? "start" : "end"}
+        dominantBaseline="central"
+        fontSize={getFontSize(width) * 2}
+      >
+        {`${value} (${(percent * 100).toFixed(0)}%)`}
+      </text>
     );
   };
 };
@@ -409,17 +451,77 @@ const SingleRadarChartComponent = ({
   );
 };
 
+const PieChartComponent = ({
+  title,
+  data,
+  graphRef,
+  height = 400,
+  width = "100%",
+}) => {
+  return (
+    <>
+      <h2>{title}</h2>
+      <div style={{ border: "1px solid black", width, height }}>
+        <ResponsiveContainer width="100%" height="100%">
+          <PieChart ref={graphRef}>
+            <defs>
+              {data.map((item) => (
+                <linearGradient
+                  key={item.name}
+                  id={`colorGradient-${item.name}`}
+                  x1="1"
+                  y1="1"
+                  x2="0"
+                  y2="0"
+                >
+                  <stop
+                    offset="50%"
+                    stopColor={COLORS[item.name]}
+                    stopOpacity={1}
+                  />
+                  <stop
+                    offset="100%"
+                    stopColor={COLORS[item.name]}
+                    stopOpacity={0.6}
+                  />
+                </linearGradient>
+              ))}
+            </defs>
+            <Pie
+              data={data}
+              dataKey="value"
+              nameKey="name"
+              cx="50%"
+              cy="50%"
+              outerRadius="40%"
+              fill="#8884d8"
+              label={renderCustomizedPieLabel(width)}
+            >
+              {data.map((entry) => (
+                <Cell
+                  key={`cell-${entry.name}`}
+                  fill={`url(#colorGradient-${entry.name})`}
+                />
+              ))}
+            </Pie>
+            <Tooltip />
+            <Legend
+              formatter={formatter(width)}
+              iconSize={getFontSize(width)}
+            />
+          </PieChart>
+        </ResponsiveContainer>
+      </div>
+    </>
+  );
+};
+
 const App = () => {
-  const availablePlatforms = [
-    { name: "Facebook", key: "FB" },
-    { name: "Instagram", key: "IG" },
-    { name: "Blogs", key: "Web" },
-  ];
   const availableSeasons = ["2023/2024", "2022/2023", "2021/2022", "2020/2021"];
 
   const [seasonTimeline, setSeasonTimeline] = useState(availableSeasons[0]);
   const [platformsTimeline, setPlatformsTimeline] = useState(
-    Object.values(availablePlatforms).map((p) => p.key)
+    Object.values(AVAILABLE_PLATFORMS).map((p) => p.key)
   );
   const [usePostsTimeline, setUsePostsTimeline] = useState(true);
   const [usePercentageTimeline, setUsePercentageTimeline] = useState(false);
@@ -429,7 +531,7 @@ const App = () => {
 
   const [seasonsRadar, setSeasonsRadar] = useState(availableSeasons);
   const [platformsRadar, setPlatformsRadar] = useState(
-    Object.values(availablePlatforms).map((p) => p.key)
+    Object.values(AVAILABLE_PLATFORMS).map((p) => p.key)
   );
   const [usePostsRadar, setUsePostsRadar] = useState(true);
 
@@ -439,6 +541,11 @@ const App = () => {
     keywordsTimeline,
     usePostsTimeline,
     usePercentageTimeline
+  );
+  const piePlatformDistributionData = getPiePlatformDistributionData(
+    seasonTimeline,
+    keywordsTimeline,
+    usePostsTimeline
   );
   const radarData = getRadarData(seasonsRadar, platformsRadar, usePostsRadar);
 
@@ -508,7 +615,7 @@ const App = () => {
           style={{ width: "100%", fontSize: 26 }}
           multiple={true}
         >
-          {availablePlatforms.map((p) => (
+          {AVAILABLE_PLATFORMS.map((p) => (
             <option key={p.key} value={p.key}>
               {p.name}
             </option>
@@ -578,6 +685,28 @@ const App = () => {
             (usePercentageTimeline ? " %" : ""),
         }}
       />
+      <Downloader
+        data={piePlatformDistributionData}
+        name={`Pie_Platforms_${timelineAttrsName}`}
+        xAxisLabel="name"
+        props={{ title: `Platforms Distribution` }}
+        ChartComponent={PieChartComponent}
+      />
+      {AVAILABLE_PLATFORMS.map((platform) => (
+        <Downloader
+          key={platform.key}
+          data={getPieSentimentData(
+            seasonTimeline,
+            [platform.key],
+            keywordsTimeline,
+            usePostsTimeline
+          )}
+          name={`Pie_${platform.key}_${timelineAttrsName}`}
+          xAxisLabel="name"
+          props={{ title: `${platform.name} Sentiment Distribution` }}
+          ChartComponent={PieChartComponent}
+        />
+      ))}
 
       <div style={{ display: "flex", gap: 20 }}>
         <h1>
@@ -622,7 +751,7 @@ const App = () => {
           style={{ width: "100%", fontSize: 26 }}
           multiple={true}
         >
-          {availablePlatforms.map((p) => (
+          {AVAILABLE_PLATFORMS.map((p) => (
             <option key={p.key} value={p.key}>
               {p.name}
             </option>

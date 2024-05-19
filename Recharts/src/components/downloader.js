@@ -60,7 +60,7 @@ export default function Downloader({
     } else {
       console.log("No png found.");
     }
-  }, [getPng]);
+  }, [getPng, name]);
 
   const handleCSVDownload = useCallback(async () => {
     console.log("Downloading...");
@@ -68,7 +68,7 @@ export default function Downloader({
       type: "text/csv",
     });
     FileSaver.saveAs(csvData, `${name}.csv`);
-  });
+  }, [data, xAxisLabel, name]);
 
   return (
     <div style={{ marginTop: 20, marginBottom: 20 }}>

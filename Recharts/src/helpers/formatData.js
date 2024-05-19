@@ -20,6 +20,12 @@ export const AVAILABLE_KEYWORDS = {
   castillo: null,
 };
 
+export const AVAILABLE_PLATFORMS = [
+  { name: "Facebook", key: "FB" },
+  { name: "Instagram", key: "IG" },
+  { name: "Web", key: "Web" },
+];
+
 export default function getProcessedPosts() {
   return posts;
 }
