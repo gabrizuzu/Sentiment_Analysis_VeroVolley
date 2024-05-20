@@ -7,7 +7,11 @@ import {
 } from "./helpers/pieData";
 import { getTimelineData } from "./helpers/timelineData";
 import Downloader from "./components/downloader";
-import { AVAILABLE_KEYWORDS, AVAILABLE_PLATFORMS } from "./helpers/formatData";
+import {
+  AVAILABLE_KEYWORDS,
+  AVAILABLE_PLATFORMS,
+  dataToCSV,
+} from "./helpers/formatData";
 import {
   AreaChartComponent,
   BarChartComponent,
@@ -192,6 +196,15 @@ const App = () => {
         xAxisLabel="name"
         props={{ title: `Platforms Distribution` }}
         ChartComponent={PieChartComponent}
+        getCustomCSVData={() => {
+          const new_data = { id: 1 };
+          // Data is in the format [{name: "Instagram", value: 10}, ...]
+          // We want to convert it to [{Instagram: 10, ...}]
+          for (const d of piePlatformDistributionData) {
+            new_data[d.name] = d.value;
+          }
+          return dataToCSV([new_data], "id");
+        }}
       />
       {AVAILABLE_PLATFORMS.map((platform) => (
         <Downloader
@@ -206,6 +219,22 @@ const App = () => {
           xAxisLabel="name"
           props={{ title: `${platform.name} Sentiment Distribution` }}
           ChartComponent={PieChartComponent}
+          getCustomCSVData={() => {
+            const new_data = [];
+            for (const p of AVAILABLE_PLATFORMS) {
+              new_data.push({ Platform: p.name });
+              const temp_data = getPieSentimentData(
+                seasonTimeline,
+                [p.key],
+                keywordsTimeline,
+                usePostsTimeline
+              );
+              for (const d of temp_data) {
+                new_data[new_data.length - 1][d.name] = d.value;
+              }
+            }
+            return dataToCSV(new_data, "Platform");
+          }}
         />
       ))}
 
