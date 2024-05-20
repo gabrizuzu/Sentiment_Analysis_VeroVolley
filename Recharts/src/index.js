@@ -4,6 +4,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 
 import App from "./App";
 import VeroVolley from "./VeroVolley";
+import Athletes from "./Athletes";
 
 const rootElement = document.getElementById("root");
 const root = createRoot(rootElement);
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
   {
     path: "/vero-volley",
     element: <VeroVolley />,
+  },
+  {
+    path: "/athletes",
+    element: <Athletes />,
   },
 ]);
 
