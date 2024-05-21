@@ -19,12 +19,14 @@ import {
   Pie,
   Cell,
 } from "recharts";
+import { OFFENSIVE_KEYWORDS } from "../helpers/offensiveData";
 
 export const COLORS = {
   quantity: "#A3A3A3",
   positive: "#20519F",
   negative: "#e14547",
   neutral: "#A8D9FD",
+  VeroVolley: "#20519F",
   Sylla: "#8884d8",
   Orro: "#82ca9d",
   Egonu: "#ffc658",
@@ -286,6 +288,89 @@ export const AreaChartComponent = ({
             fill="url(#color3)"
           />
         </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  );
+};
+
+export const InvertedBarChartComponent = ({
+  xlabel,
+  data,
+  graphRef,
+  height = 400,
+  width = "100%",
+}) => {
+  return (
+    <div style={{ border: "1px solid black", width, height }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart
+          ref={graphRef}
+          data={data}
+          margin={{
+            top: getFontSize(width),
+            right: getFontSize(width),
+            left: getFontSize(width) * 4,
+            bottom: getFontSize(width),
+          }}
+          layout="vertical"
+        >
+          <defs>
+            <linearGradient
+              id={`colorGradient-offensive`}
+              x1="1"
+              y1="1"
+              x2="0"
+              y2="0"
+            >
+              <stop
+                offset="50%"
+                stopColor={COLORS["negative"]}
+                stopOpacity={1}
+              />
+              <stop
+                offset="100%"
+                stopColor={COLORS["negative"]}
+                stopOpacity={0.6}
+              />
+            </linearGradient>
+          </defs>
+          <CartesianGrid strokeDasharray="3 3" />
+          <XAxis
+            type="number"
+            fontSize={getFontSize(width)}
+            label={{
+              value: Object.keys(data[0]).filter((key) => key !== "subject")[0],
+              angle: 0,
+              position: "bottom",
+              fontSize: getFontSize(width),
+              // offset: 10,
+            }}
+          />
+          {/* {data.map((item) => (
+            <YAxis
+              key={item.subject}
+              dataKey={item.subject}
+              type="category"
+              fontSize={getFontSize(width)}
+            />
+          ))} */}
+          <YAxis
+            dataKey="subject"
+            type="category"
+            fontSize={getFontSize(width)}
+          />
+          <Tooltip />
+          {/* <Legend
+            formatter={formatter(width)}
+            iconSize={getFontSize(width) / 2}
+            wrapperStyle={{ paddingTop: getFontSize(width) }}
+          /> */}
+          <Bar
+            dataKey={Object.keys(data[0]).filter((key) => key !== "subject")[0]}
+            fill="url(#colorGradient-offensive)"
+            stackId="a"
+          />
+        </BarChart>
       </ResponsiveContainer>
     </div>
   );

@@ -1,6 +1,12 @@
 import getProcessedPosts, { AVAILABLE_PLATFORMS } from "./formatData";
 
-export function getPieSentimentData(seasons, platforms, keywords, usePosts) {
+export function getPieSentimentData(
+  seasons,
+  platforms,
+  sources,
+  keywords,
+  usePosts
+) {
   const posts = getProcessedPosts();
   const sentiments = ["positive", "negative", "neutral"];
 
@@ -17,6 +23,7 @@ export function getPieSentimentData(seasons, platforms, keywords, usePosts) {
   for (const post of posts) {
     if (
       !platforms.includes(post.platform) ||
+      !sources.includes(post.source) ||
       !keywords.some((keyword) => post.keywords.includes(keyword))
     ) {
       continue;
@@ -58,7 +65,12 @@ export function getPieSentimentData(seasons, platforms, keywords, usePosts) {
   return final_data;
 }
 
-export function getPiePlatformDistributionData(season, keywords, usePosts) {
+export function getPiePlatformDistributionData(
+  season,
+  sources,
+  keywords,
+  usePosts
+) {
   const posts = getProcessedPosts();
   const platforms = AVAILABLE_PLATFORMS;
 
@@ -73,7 +85,10 @@ export function getPiePlatformDistributionData(season, keywords, usePosts) {
   }
 
   for (const post of posts) {
-    if (!keywords.some((keyword) => post.keywords.includes(keyword))) {
+    if (
+      !sources.includes(post.source) ||
+      !keywords.some((keyword) => post.keywords.includes(keyword))
+    ) {
       continue;
     }
 

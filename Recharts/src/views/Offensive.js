@@ -41,7 +41,7 @@ const Offensive = () => {
                 width={1000}
               />
             </div>
-            <div style={{ display: "flex", flexDirection: "column" }}>
+            {/* <div style={{ display: "flex", flexDirection: "column" }}>
               <PieChartComponent
                 data={getPiePlatformDistributionData(season, keywords, false)}
                 title={"Platforms Distribution"}
@@ -59,7 +59,7 @@ const Offensive = () => {
                 width={400}
                 height={272}
               />
-            </div>
+            </div> */}
           </div>
         </div>
       ))}

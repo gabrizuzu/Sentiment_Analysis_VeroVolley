@@ -62,3 +62,29 @@ export function dataToCSV(data, xAxisLabel) {
   }
   return csv;
 }
+
+export function countPosts(season, keywords) {
+  let count = 0;
+  for (const post of posts) {
+    if (
+      post.season === season &&
+      keywords.some((k) => post.keywords.includes(k))
+    ) {
+      count += 1;
+    }
+  }
+  return count;
+}
+
+export function countComments(season, keywords) {
+  let count = 0;
+  for (const post of posts) {
+    if (
+      post.season === season &&
+      keywords.some((k) => post.keywords.includes(k))
+    ) {
+      count += post.comments.length;
+    }
+  }
+  return count;
+}
