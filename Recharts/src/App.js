@@ -20,6 +20,7 @@ import {
   RadarChartComponent,
   SingleRadarChartComponent,
 } from "./components/graphs";
+import { getOffensiveData } from "./helpers/offensiveData";
 
 const App = () => {
   const availableSeasons = ["2023/2024", "2022/2023", "2021/2022", "2020/2021"];
@@ -42,6 +43,8 @@ const App = () => {
   );
   const [usePostsRadar, setUsePostsRadar] = useState(true);
 
+  console.log(getOffensiveData("2023/2024"));
+
   const timelineData = getTimelineData(
     seasonTimeline,
     platformsTimeline,
@@ -52,6 +55,7 @@ const App = () => {
   );
   const piePlatformDistributionData = getPiePlatformDistributionData(
     seasonTimeline,
+    sourcesTimeline,
     keywordsTimeline,
     usePostsTimeline
   );
@@ -189,9 +193,9 @@ const App = () => {
 
       <Downloader
         data={timelineData}
-        name={`Bar_${timelineAttrsName}`}
+        name={`Area_${timelineAttrsName}`}
         xAxisLabel="month"
-        ChartComponent={BarChartComponent}
+        ChartComponent={AreaChartComponent}
         props={{
           ylabel:
             (usePostsTimeline ? "Posts" : "Comments") +
@@ -199,10 +203,10 @@ const App = () => {
         }}
       />
       <Downloader
-        data={timelineData}
-        name={`Area_${timelineAttrsName}`}
-        xAxisLabel="month"
-        ChartComponent={AreaChartComponent}
+        data={getOffensiveData(seasonTimeline)}
+        name={`Offensive_Bar_${timelineAttrsName}`}
+        xAxisLabel="subject"
+        ChartComponent={BarChartComponent}
         props={{
           ylabel:
             (usePostsTimeline ? "Posts" : "Comments") +
@@ -229,6 +233,7 @@ const App = () => {
         data={getPieSentimentData(
           seasonTimeline,
           AVAILABLE_PLATFORMS.map((p) => p.key),
+          sourcesTimeline,
           keywordsTimeline,
           usePostsTimeline
         )}
@@ -243,6 +248,7 @@ const App = () => {
           const temp_data = getPieSentimentData(
             seasonTimeline,
             AVAILABLE_PLATFORMS.map((p) => p.key),
+            sourcesTimeline,
             keywordsTimeline,
             usePostsTimeline
           );
@@ -256,6 +262,7 @@ const App = () => {
             const temp_data = getPieSentimentData(
               seasonTimeline,
               [p.key],
+              sourcesTimeline,
               keywordsTimeline,
               usePostsTimeline
             );
@@ -272,6 +279,7 @@ const App = () => {
           data={getPieSentimentData(
             seasonTimeline,
             [platform.key],
+            sourcesTimeline,
             keywordsTimeline,
             usePostsTimeline
           )}
@@ -286,6 +294,7 @@ const App = () => {
             const temp_data = getPieSentimentData(
               seasonTimeline,
               AVAILABLE_PLATFORMS.map((p) => p.key),
+              sourcesTimeline,
               keywordsTimeline,
               usePostsTimeline
             );
@@ -299,6 +308,7 @@ const App = () => {
               const temp_data = getPieSentimentData(
                 seasonTimeline,
                 [p.key],
+                sourcesTimeline,
                 keywordsTimeline,
                 usePostsTimeline
               );

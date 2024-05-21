@@ -19,6 +19,7 @@ import {
   Pie,
   Cell,
 } from "recharts";
+import { OFFENSIVE_KEYWORDS } from "../helpers/offensiveData";
 
 export const COLORS = {
   quantity: "#A3A3A3",
@@ -286,6 +287,76 @@ export const AreaChartComponent = ({
             fill="url(#color3)"
           />
         </AreaChart>
+      </ResponsiveContainer>
+    </div>
+  );
+};
+
+export const invertedBarChartComponent = ({
+  ylabel,
+  data,
+  graphRef,
+  height = 400,
+  width = "100%",
+}) => {
+  return (
+    <div style={{ border: "1px solid black", width, height }}>
+      <ResponsiveContainer width="100%" height="100%">
+        <BarChart
+          ref={graphRef}
+          data={data}
+          margin={{
+            top: getFontSize(width),
+            right: getFontSize(width),
+            left: getFontSize(width),
+            bottom: 5,
+          }}
+        >
+          <defs>
+            {OFFENSIVE_KEYWORDS.map((keyword) => (
+              <linearGradient
+                id={`colorGradient-${keyword}`}
+                x1="1"
+                y1="1"
+                x2="0"
+                y2="0"
+              >
+                <stop
+                  offset="50%"
+                  stopColor={COLORS[keyword]}
+                  stopOpacity={1}
+                />
+                <stop
+                  offset="100%"
+                  stopColor={COLORS[keyword]}
+                  stopOpacity={0.6}
+                />
+              </linearGradient>
+            ))}
+          </defs>
+          <CartesianGrid vertical={false} strokeDasharray="3 3" />
+          <XAxis dataKey="subject" fontSize={getFontSize(width)} />
+          <YAxis
+            label={{
+              value: ylabel,
+              angle: -90,
+              position: "insideLeft",
+              fontSize: getFontSize(width),
+            }}
+            fontSize={getFontSize(width)}
+          />
+          <Tooltip />
+          <Legend
+            formatter={formatter(width)}
+            iconSize={getFontSize(width) / 2}
+            wrapperStyle={{ paddingTop: getFontSize(width) }}
+          />
+          <Bar
+            dataKey="negative"
+            fill="url(#colorGradient-negative)"
+            stackId="a"
+          />
+        </BarChart>
       </ResponsiveContainer>
     </div>
   );
