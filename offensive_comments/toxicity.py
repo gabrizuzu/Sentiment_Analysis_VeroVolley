@@ -46,6 +46,8 @@ def add_toxicity_to_comments(file_path, api_key):
                         comment['identity_attack'] = analysis['attributeScores']['IDENTITY_ATTACK']['summaryScore']['value']
                         comment['insult'] = analysis['attributeScores']['INSULT']['summaryScore']['value']
                         writer.writerow({'text': comment['text'], 'toxicity': comment['toxicity'], 'severe_toxicity': comment['severe_toxicity'], 'identity_attack': comment['identity_attack'], 'insult': comment['insult'], 'total_toxicity': comment['toxicity'] + comment['severe_toxicity'] + comment['identity_attack'] + comment['insult']})
+                        if comment['toxicity'] + comment['severe_toxicity'] + comment['identity_attack'] + comment['insult'] > 1:
+                            comment['isToxic'] = True
                         # time.sleep(1) # necessario perchè possiamo fare solo 60 richieste al minuto ;)
                         pbar.update(1)
         pbar.close()
@@ -61,9 +63,7 @@ def sort_csv_by_total_toxicity(csv_file_path):
 
 def main():
     api_key = 'AIzaSyAbT4Axv-x3FJ18SBNsgCJHov0NAEdZjZY' # API key di Google Cloud Platform (sarebbe da nascondere)
-    
-    
-    file_path = 'offensive_comments/sentiment_output.json'
+    file_path = 'offensive_comments/sentiment_output_with_offensives.json'
 
     add_toxicity_to_comments(file_path, api_key)
     

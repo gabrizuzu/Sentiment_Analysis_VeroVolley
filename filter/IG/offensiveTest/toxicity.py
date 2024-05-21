@@ -43,6 +43,8 @@ def add_toxicity_to_comments(file_path, api_key, source):
                         comment['identity_attack'] = analysis['attributeScores']['IDENTITY_ATTACK']['summaryScore']['value']
                         comment['insult'] = analysis['attributeScores']['INSULT']['summaryScore']['value']
                         writer.writerow({'text': comment['text'], 'toxicity': comment['toxicity'], 'severe_toxicity': comment['severe_toxicity'], 'identity_attack': comment['identity_attack'], 'insult': comment['insult'], 'total_toxicity': comment['toxicity'] + comment['severe_toxicity'] + comment['identity_attack'] + comment['insult']})
+                        if comment['toxicity'] + comment['severe_toxicity'] + comment['identity_attack'] + comment['insult'] > 1:
+                            print(comment['text'])
                         # time.sleep(1) # necessario perchè possiamo fare solo 60 richieste al minuto ;)
                        
 
@@ -59,7 +61,7 @@ def main():
     api_key = 'AIzaSyAbT4Axv-x3FJ18SBNsgCJHov0NAEdZjZY' # API key di Google Cloud Platform (sarebbe da nascondere)
     
     
-    file_path = 'filter/IG/offensiveTest/sentiment_output.json'
+    file_path = 'filter/IG/offensiveTest/sentiment_output_with_offensives.json'
     sources = get_sources(file_path)
     print(sources)
     for source in sources:
