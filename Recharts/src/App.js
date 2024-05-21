@@ -225,6 +225,47 @@ const App = () => {
           return dataToCSV([new_data], "id");
         }}
       />
+      <Downloader
+        data={getPieSentimentData(
+          seasonTimeline,
+          AVAILABLE_PLATFORMS.map((p) => p.key),
+          keywordsTimeline,
+          usePostsTimeline
+        )}
+        name={`Pie_Total_${timelineAttrsName}`}
+        xAxisLabel="name"
+        props={{ title: `Total Sentiment Distribution` }}
+        ChartComponent={PieChartComponent}
+        getCustomCSVData={() => {
+          const new_data = [{ Platform: "All" }];
+
+          // Add the total sentiment distribution
+          const temp_data = getPieSentimentData(
+            seasonTimeline,
+            AVAILABLE_PLATFORMS.map((p) => p.key),
+            keywordsTimeline,
+            usePostsTimeline
+          );
+          for (const d of temp_data) {
+            new_data[0][d.name] = d.value;
+          }
+
+          // Add the sentiment distribution for each platform
+          for (const p of AVAILABLE_PLATFORMS) {
+            new_data.push({ Platform: p.name });
+            const temp_data = getPieSentimentData(
+              seasonTimeline,
+              [p.key],
+              keywordsTimeline,
+              usePostsTimeline
+            );
+            for (const d of temp_data) {
+              new_data[new_data.length - 1][d.name] = d.value;
+            }
+          }
+          return dataToCSV(new_data, "Platform");
+        }}
+      />
       {AVAILABLE_PLATFORMS.map((platform) => (
         <Downloader
           key={platform.key}
@@ -239,7 +280,20 @@ const App = () => {
           props={{ title: `${platform.name} Sentiment Distribution` }}
           ChartComponent={PieChartComponent}
           getCustomCSVData={() => {
-            const new_data = [];
+            const new_data = [{ Platform: "All" }];
+
+            // Add the total sentiment distribution
+            const temp_data = getPieSentimentData(
+              seasonTimeline,
+              AVAILABLE_PLATFORMS.map((p) => p.key),
+              keywordsTimeline,
+              usePostsTimeline
+            );
+            for (const d of temp_data) {
+              new_data[0][d.name] = d.value;
+            }
+
+            // Add the sentiment distribution for each platform
             for (const p of AVAILABLE_PLATFORMS) {
               new_data.push({ Platform: p.name });
               const temp_data = getPieSentimentData(
