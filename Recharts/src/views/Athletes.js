@@ -80,7 +80,12 @@ const Athletes = () => {
             </div>
             <div style={{ display: "flex", flexDirection: "column" }}>
               <PieChartComponent
-                data={getPiePlatformDistributionData(season, keywords, false)}
+                data={getPiePlatformDistributionData(
+                  season,
+                  AVAILABLE_SOURCES,
+                  keywords,
+                  false
+                )}
                 title={"Platforms Distribution"}
                 width={400}
                 height={272}

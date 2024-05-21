@@ -90,6 +90,7 @@ const VeroVolley = () => {
               <PieChartComponent
                 data={getPiePlatformDistributionData(
                   season,
+                  AVAILABLE_SOURCES,
                   AVAILABLE_KEYWORDS["VeroVolley"],
                   false
                 )}

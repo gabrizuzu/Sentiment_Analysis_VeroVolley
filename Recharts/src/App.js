@@ -19,6 +19,7 @@ import {
   PieChartComponent,
   RadarChartComponent,
   SingleRadarChartComponent,
+  InvertedBarChartComponent,
 } from "./components/graphs";
 import { getOffensiveData } from "./helpers/offensiveData";
 
@@ -42,8 +43,6 @@ const App = () => {
     Object.values(AVAILABLE_PLATFORMS).map((p) => p.key)
   );
   const [usePostsRadar, setUsePostsRadar] = useState(true);
-
-  console.log(getOffensiveData("2023/2024"));
 
   const timelineData = getTimelineData(
     seasonTimeline,
@@ -202,16 +201,19 @@ const App = () => {
             (usePercentageTimeline ? " %" : ""),
         }}
       />
+      <h2 style={{ width: "100%", textAlign: "center" }}>
+        Offensive Comments (Either percentual or Normal) (Sources filter does
+        not work in here, as keys are fixed)
+      </h2>
       <Downloader
-        data={getOffensiveData(seasonTimeline)}
+        data={getOffensiveData(
+          seasonTimeline,
+          platformsTimeline,
+          usePercentageTimeline
+        )}
         name={`Offensive_Bar_${timelineAttrsName}`}
         xAxisLabel="subject"
-        ChartComponent={BarChartComponent}
-        props={{
-          ylabel:
-            (usePostsTimeline ? "Posts" : "Comments") +
-            (usePercentageTimeline ? " %" : ""),
-        }}
+        ChartComponent={InvertedBarChartComponent}
       />
       <Downloader
         data={piePlatformDistributionData}
