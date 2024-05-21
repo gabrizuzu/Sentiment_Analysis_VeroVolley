@@ -1,22 +1,18 @@
 import React, { useEffect, useState } from "react";
 
-import getRadarData from "./helpers/radarData";
 import {
   getPiePlatformDistributionData,
   getPieSentimentData,
-} from "./helpers/pieData";
-import { getTimelineData } from "./helpers/timelineData";
-import Downloader from "./components/downloader";
-import { AVAILABLE_KEYWORDS, AVAILABLE_PLATFORMS } from "./helpers/formatData";
+} from "../helpers/pieData";
+import { getTimelineData } from "../helpers/timelineData";
+import { AVAILABLE_KEYWORDS, AVAILABLE_PLATFORMS } from "../helpers/formatData";
 import {
   AreaChartComponent,
   BarChartComponent,
   PieChartComponent,
-  RadarChartComponent,
-  SingleRadarChartComponent,
-} from "./components/graphs";
+} from "../components/graphs";
 
-const Athletes = () => {
+const Offensive = () => {
   // all but VeroVolley
   const keywords = Object.keys(AVAILABLE_KEYWORDS).filter(
     (k) => k !== "VeroVolley"
@@ -32,13 +28,13 @@ const Athletes = () => {
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <div>
               <h1>Distribution of sentiment over time</h1>
-              <AreaChartComponent
+              <BarChartComponent
                 data={getTimelineData(
                   season,
                   AVAILABLE_PLATFORMS.map((p) => p.key),
                   keywords,
                   false,
-                  true
+                  false
                 )}
                 ylabel={"Comments %"}
                 height={600}
@@ -71,4 +67,4 @@ const Athletes = () => {
   );
 };
 
-export default Athletes;
+export default Offensive;

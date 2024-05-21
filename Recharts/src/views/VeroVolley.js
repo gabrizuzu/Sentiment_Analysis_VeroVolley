@@ -1,20 +1,20 @@
 import React, { useEffect, useState } from "react";
 
-import getRadarData from "./helpers/radarData";
+import getRadarData from "../helpers/radarData";
 import {
   getPiePlatformDistributionData,
   getPieSentimentData,
-} from "./helpers/pieData";
-import { getTimelineData } from "./helpers/timelineData";
-import Downloader from "./components/downloader";
-import { AVAILABLE_KEYWORDS, AVAILABLE_PLATFORMS } from "./helpers/formatData";
+} from "../helpers/pieData";
+import { getTimelineData } from "../helpers/timelineData";
+import Downloader from "../components/downloader";
+import { AVAILABLE_KEYWORDS, AVAILABLE_PLATFORMS } from "../helpers/formatData";
 import {
   AreaChartComponent,
   BarChartComponent,
   PieChartComponent,
   RadarChartComponent,
   SingleRadarChartComponent,
-} from "./components/graphs";
+} from "../components/graphs";
 
 const VeroVolley = () => {
   return (
