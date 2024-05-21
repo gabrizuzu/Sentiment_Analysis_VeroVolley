@@ -4,6 +4,7 @@ import getRadarData from "../helpers/radarData";
 import {
   getPiePlatformDistributionData,
   getPieSentimentData,
+  getPieSentimentDataByPlatforms,
 } from "../helpers/pieData";
 import { getTimelineData } from "../helpers/timelineData";
 import Downloader from "../components/downloader";
@@ -59,7 +60,7 @@ const VeroVolley = () => {
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <div>
               <h1>Distribution of sentiment over time</h1>
-              <AreaChartComponent
+              <Downloader
                 data={getTimelineData(
                   season,
                   AVAILABLE_PLATFORMS.map((p) => p.key),
@@ -68,11 +69,17 @@ const VeroVolley = () => {
                   false,
                   true
                 )}
-                ylabel={"Comments %"}
-                height={300}
-                width={1000}
+                name={`VeroVolley_AreaChart_Percentual_${season}`}
+                xAxisLabel={"month"}
+                ChartComponent={AreaChartComponent}
+                props={{
+                  ylabel: "Comments %",
+                }}
+                defaultWidth={1000}
+                defaultHeight={300}
+                justCsvDownload={true}
               />
-              <AreaChartComponent
+              <Downloader
                 data={getTimelineData(
                   season,
                   AVAILABLE_PLATFORMS.map((p) => p.key),
@@ -81,34 +88,49 @@ const VeroVolley = () => {
                   false,
                   false
                 )}
-                ylabel={"Comments"}
-                height={300}
-                width={1000}
+                name={`VeroVolley_AreaChart_Quantity_${season}`}
+                xAxisLabel={"month"}
+                ChartComponent={AreaChartComponent}
+                props={{
+                  ylabel: "Comments",
+                }}
+                defaultWidth={1000}
+                defaultHeight={300}
+                justCsvDownload={true}
               />
             </div>
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <PieChartComponent
+              <Downloader
                 data={getPiePlatformDistributionData(
                   season,
                   AVAILABLE_SOURCES,
                   AVAILABLE_KEYWORDS["VeroVolley"],
                   false
                 )}
-                title={"Platforms Distribution"}
-                width={400}
-                height={272}
+                name={`VeroVolley_PieChart_Platforms_${season}`}
+                xAxisLabel={"subject"}
+                ChartComponent={PieChartComponent}
+                props={{
+                  title: "Platforms Comments Distribution",
+                }}
+                defaultWidth={400}
+                defaultHeight={272}
+                justCsvDownload={true}
               />
-              <PieChartComponent
-                data={getPieSentimentData(
-                  [season],
-                  AVAILABLE_PLATFORMS[0].key,
-                  AVAILABLE_SOURCES,
-                  AVAILABLE_KEYWORDS["VeroVolley"],
-                  false
+              <Downloader
+                data={getPieSentimentDataByPlatforms(
+                  season,
+                  AVAILABLE_KEYWORDS["VeroVolley"]
                 )}
-                title={"Sentiment Per Platform: " + AVAILABLE_PLATFORMS[0].name}
-                width={400}
-                height={272}
+                name={`VeroVolley_PieChart_Sentiment_${season}`}
+                xAxisLabel={"subject"}
+                ChartComponent={PieChartComponent}
+                props={{
+                  title: "Sentiment Per Platform: [ONE PER PLATFORM]",
+                }}
+                defaultWidth={400}
+                defaultHeight={272}
+                justCsvDownload={true}
               />
             </div>
           </div>

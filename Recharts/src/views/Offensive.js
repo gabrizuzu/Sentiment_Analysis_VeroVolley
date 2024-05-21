@@ -1,18 +1,15 @@
 import React, { useEffect, useState } from "react";
 
-import {
-  getPiePlatformDistributionData,
-  getPieSentimentData,
-} from "../helpers/pieData";
-import { getTimelineData } from "../helpers/timelineData";
 import { AVAILABLE_KEYWORDS, AVAILABLE_PLATFORMS } from "../helpers/formatData";
 import {
-  AreaChartComponent,
-  BarChartComponent,
   InvertedBarChartComponent,
   PieChartComponent,
 } from "../components/graphs";
-import { getOffensiveData } from "../helpers/offensiveData";
+import {
+  getOffensiveData,
+  getOffensiveDistributionData,
+} from "../helpers/offensiveData";
+import Downloader from "../components/downloader";
 
 const Offensive = () => {
   // all but VeroVolley
@@ -24,22 +21,44 @@ const Offensive = () => {
     <div
       style={{ display: "flex", flexDirection: "column", alignItems: "center" }}
     >
+      <div style={{ width: "60%", marginBottom: "50px" }}>
+        <p style={{ textAlign: "justify", fontSize: "1.5em" }}>
+          This section shows the information about the offensive comments found
+          accross the data. The comments are marked as offensive with four
+          classifications:
+        </p>
+        <ul>
+          <li>
+            Toxicity: Comments that are offensive, disrespectful, or otherwise
+            likely to make people leave a discussion.
+          </li>
+          <li>
+            Severe toxicity: Comments that are very toxic or extremely
+            offensive.
+          </li>
+          <li>
+            Identity attack: Comments that are directly attacking the identity
+            of a person or group.
+          </li>
+          <li>Insult: Comments that contain an insult.</li>
+        </ul>
+        <p style={{ textAlign: "justify", fontSize: "1.5em" }}>
+          The bar charts shows the distribution of the offensive comments over
+          Vero Volley, and some of the main players. The data is shown in
+          percentage and in number of comments.
+        </p>
+        <p style={{ textAlign: "justify", fontSize: "1.5em" }}>
+          The pie chart shows the four levels of offensive classification by
+          subject.
+        </p>
+      </div>
       {["2023/2024", "2022/2023", "2021/2022"].map((season) => (
         <div style={{ width: "60%", marginBottom: "50px" }}>
           <h1>Season {season}</h1>
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <div>
-              <h1>Distribution of sentiment over time</h1>
-              <InvertedBarChartComponent
-                data={getOffensiveData(
-                  season,
-                  AVAILABLE_PLATFORMS.map((p) => p.key),
-                  false
-                )}
-                height={300}
-                width={1000}
-              />
-              <InvertedBarChartComponent
+              <h1>Offensive Messages Per Subject</h1>
+              {/* <InvertedBarChartComponent
                 data={getOffensiveData(
                   season,
                   AVAILABLE_PLATFORMS.map((p) => p.key),
@@ -47,27 +66,52 @@ const Offensive = () => {
                 )}
                 height={300}
                 width={1000}
+              /> */}
+              <Downloader
+                data={getOffensiveData(
+                  season,
+                  AVAILABLE_PLATFORMS.map((p) => p.key),
+                  true
+                )}
+                name={`Offensive_BarChart_Percentual_${season}`}
+                xAxisLabel={"subject"}
+                ChartComponent={InvertedBarChartComponent}
+                defaultWidth={1000}
+                defaultHeight={300}
+                justCsvDownload={true}
               />
-            </div>
-            {/* <div style={{ display: "flex", flexDirection: "column" }}>
-              <PieChartComponent
-                data={getPiePlatformDistributionData(season, keywords, false)}
-                title={"Platforms Distribution"}
-                width={400}
-                height={272}
-              />
-              <PieChartComponent
-                data={getPieSentimentData(
-                  [season],
-                  AVAILABLE_PLATFORMS[0].key,
-                  keywords,
+
+              <Downloader
+                data={getOffensiveData(
+                  season,
+                  AVAILABLE_PLATFORMS.map((p) => p.key),
                   false
                 )}
-                title={"Sentiment Per Platform: " + AVAILABLE_PLATFORMS[0].name}
-                width={400}
-                height={272}
+                name={`Offensive_BarChart_Quantity_${season}`}
+                xAxisLabel={"subject"}
+                ChartComponent={InvertedBarChartComponent}
+                defaultWidth={1000}
+                defaultHeight={300}
+                justCsvDownload={true}
               />
-            </div> */}
+            </div>
+            <div style={{ display: "flex", flexDirection: "column" }}>
+              <Downloader
+                data={getOffensiveDistributionData(
+                  season,
+                  AVAILABLE_PLATFORMS.map((p) => p.key)
+                )}
+                name={`Offensive_PieChart_${season}`}
+                xAxisLabel={"subject"}
+                props={{
+                  title: "Toxicity Levels Per Subject: [ONE PER SUBJECT]",
+                }}
+                ChartComponent={PieChartComponent}
+                defaultWidth={400}
+                defaultHeight={272}
+                justCsvDownload={true}
+              />
+            </div>
           </div>
         </div>
       ))}

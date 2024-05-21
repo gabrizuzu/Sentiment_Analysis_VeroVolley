@@ -20,8 +20,13 @@ import {
   RadarChartComponent,
   SingleRadarChartComponent,
   InvertedBarChartComponent,
+  OffensiveRadarChartComponent,
 } from "./components/graphs";
-import { getOffensiveData } from "./helpers/offensiveData";
+import {
+  getOffensiveByPlatformData,
+  getOffensiveData,
+  getOffensiveDistributionData,
+} from "./helpers/offensiveData";
 
 const App = () => {
   const availableSeasons = ["2023/2024", "2022/2023", "2021/2022", "2020/2021"];
@@ -215,6 +220,21 @@ const App = () => {
         xAxisLabel="subject"
         ChartComponent={InvertedBarChartComponent}
       />
+      <Downloader
+        data={getOffensiveDistributionData(seasonTimeline, platformsTimeline)}
+        name={`Offensive_Pie_${timelineAttrsName}`}
+        xAxisLabel="subject"
+        props={{
+          title: `Offensive Levels Per Person:`,
+          subject: AVAILABLE_KEYWORDS["VeroVolley"].includes(
+            keywordsTimeline[0]
+          )
+            ? "VeroVolley"
+            : keywordsTimeline[0],
+        }}
+        ChartComponent={PieChartComponent}
+      />
+
       <Downloader
         data={piePlatformDistributionData}
         name={`Pie_Platforms_${timelineAttrsName}`}

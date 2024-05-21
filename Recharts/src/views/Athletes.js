@@ -3,6 +3,7 @@ import React, { useEffect, useState } from "react";
 import {
   getPiePlatformDistributionData,
   getPieSentimentData,
+  getPieSentimentDataByPlatforms,
 } from "../helpers/pieData";
 import { getTimelineData } from "../helpers/timelineData";
 import {
@@ -13,6 +14,7 @@ import {
   countPosts,
 } from "../helpers/formatData";
 import { AreaChartComponent, PieChartComponent } from "../components/graphs";
+import Downloader from "../components/downloader";
 
 const Athletes = () => {
   // all but VeroVolley
@@ -41,7 +43,7 @@ const Athletes = () => {
         </p>
       </div>
       {["2023/2024", "2022/2023", "2021/2022"].map((season) => (
-        <div style={{ width: "60%", marginBottom: "50px" }}>
+        <div key={season} style={{ width: "60%", marginBottom: "50px" }}>
           <h1>Season {season}</h1>
 
           <div style={{ display: "flex", justifyContent: "space-between" }}>
@@ -51,7 +53,7 @@ const Athletes = () => {
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <div>
               <h1>Distribution of sentiment over time</h1>
-              <AreaChartComponent
+              <Downloader
                 data={getTimelineData(
                   season,
                   AVAILABLE_PLATFORMS.map((p) => p.key),
@@ -60,11 +62,17 @@ const Athletes = () => {
                   false,
                   true
                 )}
-                ylabel={"Comments %"}
-                height={300}
-                width={1000}
+                name={`Athletes_AreaChart_Percentual_${season}`}
+                xAxisLabel={"month"}
+                ChartComponent={AreaChartComponent}
+                props={{
+                  ylabel: "Comments %",
+                }}
+                defaultHeight={300}
+                defaultWidth={1000}
+                justCsvDownload={true}
               />
-              <AreaChartComponent
+              <Downloader
                 data={getTimelineData(
                   season,
                   AVAILABLE_PLATFORMS.map((p) => p.key),
@@ -73,34 +81,46 @@ const Athletes = () => {
                   false,
                   false
                 )}
-                ylabel={"Comments"}
-                height={300}
-                width={1000}
+                name={`Athletes_AreaChart_Quantity_${season}`}
+                xAxisLabel={"month"}
+                ChartComponent={AreaChartComponent}
+                props={{
+                  ylabel: "Comments",
+                }}
+                defaultHeight={300}
+                defaultWidth={1000}
+                justCsvDownload={true}
               />
             </div>
             <div style={{ display: "flex", flexDirection: "column" }}>
-              <PieChartComponent
+              <Downloader
                 data={getPiePlatformDistributionData(
                   season,
                   AVAILABLE_SOURCES,
                   keywords,
                   false
                 )}
-                title={"Platforms Distribution"}
-                width={400}
-                height={272}
+                name={`Athletes_PieChart_Platforms_${season}`}
+                xAxisLabel={"subject"}
+                ChartComponent={PieChartComponent}
+                props={{
+                  title: "Platforms Comments Distribution",
+                }}
+                defaultWidth={400}
+                defaultHeight={272}
+                justCsvDownload={true}
               />
-              <PieChartComponent
-                data={getPieSentimentData(
-                  [season],
-                  AVAILABLE_PLATFORMS[0].key,
-                  AVAILABLE_SOURCES,
-                  keywords,
-                  false
-                )}
-                title={"Sentiment Per Platform: " + AVAILABLE_PLATFORMS[0].name}
-                width={400}
-                height={272}
+              <Downloader
+                data={getPieSentimentDataByPlatforms(season, keywords)}
+                name={`Athletes_PieChart_Sentiment_${season}`}
+                xAxisLabel={"subject"}
+                ChartComponent={PieChartComponent}
+                props={{
+                  title: "Sentiment Per Platform: [ONE PER PLATFORM]",
+                }}
+                defaultWidth={400}
+                defaultHeight={272}
+                justCsvDownload={true}
               />
             </div>
           </div>

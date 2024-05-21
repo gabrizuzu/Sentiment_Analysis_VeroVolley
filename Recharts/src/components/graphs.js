@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect, useState } from "react";
 import {
   BarChart,
   Bar,
@@ -35,6 +35,11 @@ export const COLORS = {
   Facebook: "#1877F2",
   Instagram: "#de3ab7",
   Web: "#66CDAA",
+  // Use different colors for toxicity, severe_toxicity, identity_attack and insult
+  Toxicity: "#e14547",
+  Severe_Toxicity: "#20519F",
+  Identity_Attack: "#A8D9FD",
+  Insult: "#8884d8",
 };
 
 export const getFontSize = (width) => {
@@ -532,17 +537,48 @@ export const PieChartComponent = ({
   title,
   data,
   graphRef,
+  subject = null,
   height = 400,
   width = "100%",
 }) => {
+  const [dataToUse, setDataToUse] = useState(data);
+
+  useEffect(() => {
+    let singleData = data[0];
+    if (subject) {
+      singleData = data.find(
+        (item) => item.subject.toLowerCase() === subject.toLowerCase()
+      );
+      if (!singleData) {
+        console.log(data, subject);
+        setDataToUse([]);
+        return;
+      }
+    }
+    if (singleData.subject) {
+      const props = Object.keys(singleData).filter((key) => key !== "subject");
+      setDataToUse(
+        props.map((key) => {
+          const item = {
+            name: key,
+            value: singleData[key],
+          };
+          return item;
+        })
+      );
+    }
+  }, [data, subject]);
   return (
     <>
-      <h2>{title}</h2>
+      <h2>
+        {title}
+        {subject ? ` ${subject}` : ""}
+      </h2>
       <div style={{ border: "1px solid black", width, height }}>
         <ResponsiveContainer width="100%" height="100%">
           <PieChart ref={graphRef}>
             <defs>
-              {data.map((item) => (
+              {dataToUse.map((item) => (
                 <linearGradient
                   key={item.name}
                   id={`colorGradient-${item.name}`}
@@ -565,7 +601,7 @@ export const PieChartComponent = ({
               ))}
             </defs>
             <Pie
-              data={data}
+              data={dataToUse}
               dataKey="value"
               nameKey="name"
               cx="50%"
@@ -574,7 +610,7 @@ export const PieChartComponent = ({
               fill="#8884d8"
               label={renderCustomizedPieLabel(width)}
             >
-              {data.map((entry) => (
+              {dataToUse.map((entry) => (
                 <Cell
                   key={`cell-${entry.name}`}
                   fill={`url(#colorGradient-${entry.name})`}

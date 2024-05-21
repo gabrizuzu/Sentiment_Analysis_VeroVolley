@@ -11,13 +11,16 @@ export default function Downloader({
   props,
   ChartComponent,
   getCustomCSVData = () => null,
+  justCsvDownload = false,
+  defaultWidth = 1000,
+  defaultHeight = 400,
 }) {
   // useCurrentPng usage (isLoading is optional)
   const [getPng, { ref, isLoading }] = useCurrentPng();
 
-  const [width, setWidth] = useState(1000);
+  const [width, setWidth] = useState(defaultWidth);
   const [newWidth, setNewWidth] = useState("1000");
-  const [height, setHeight] = useState(400);
+  const [height, setHeight] = useState(defaultHeight);
   const [newHeight, setNewHeight] = useState("400");
 
   // Can also pass in options for html2canvas
@@ -77,39 +80,43 @@ export default function Downloader({
           gap: 10,
         }}
       >
-        <label>
-          Width:
-          <input
-            type="text"
-            value={newWidth}
-            onChange={(e) => setNewWidth(e.target.value)}
-          />
-        </label>
-        <label>
-          Height:
-          <input
-            type="text"
-            value={newHeight}
-            onChange={(e) => setNewHeight(e.target.value)}
-          />
-        </label>
-        <button
-          onClick={() => {
-            const fixedWidth = newWidth?.includes("%")
-              ? newWidth
-              : parseInt(newWidth);
-            const fixedHeight = newHeight?.includes("%")
-              ? newHeight
-              : parseInt(newHeight);
-            setWidth(fixedWidth || 1);
-            setHeight(fixedHeight || 1);
-          }}
-        >
-          Resize Chart
-        </button>
-        <button onClick={handleDownload}>
-          {isLoading ? "Downloading..." : "Download Chart"}
-        </button>
+        {!justCsvDownload && (
+          <>
+            <label>
+              Width:
+              <input
+                type="text"
+                value={newWidth}
+                onChange={(e) => setNewWidth(e.target.value)}
+              />
+            </label>
+            <label>
+              Height:
+              <input
+                type="text"
+                value={newHeight}
+                onChange={(e) => setNewHeight(e.target.value)}
+              />
+            </label>
+            <button
+              onClick={() => {
+                const fixedWidth = newWidth?.includes("%")
+                  ? newWidth
+                  : parseInt(newWidth);
+                const fixedHeight = newHeight?.includes("%")
+                  ? newHeight
+                  : parseInt(newHeight);
+                setWidth(fixedWidth || 1);
+                setHeight(fixedHeight || 1);
+              }}
+            >
+              Resize Chart
+            </button>
+            <button onClick={handleDownload}>
+              {isLoading ? "Downloading..." : "Download Chart"}
+            </button>
+          </>
+        )}
         <button onClick={handleCSVDownload}>Download CSV data</button>
       </div>
     </div>

@@ -64,6 +64,44 @@ export function getPieSentimentData(
 
   return final_data;
 }
+export function getPieSentimentDataByPlatforms(season, keywords) {
+  const posts = getProcessedPosts();
+  const sentiments = ["positive", "negative", "neutral"];
+  const platforms = AVAILABLE_PLATFORMS.map((p) => p.key);
+
+  const data = {};
+  for (const platform of platforms) {
+    const platform_data = {};
+    for (const sentiment of sentiments) {
+      platform_data[sentiment] = 0;
+    }
+    data[platform] = platform_data;
+  }
+
+  for (const post of posts) {
+    if (!keywords.some((keyword) => post.keywords.includes(keyword))) {
+      continue;
+    }
+    for (const comment of post.comments) {
+      if (
+        season !== comment.season ||
+        !sentiments.includes(comment.sentiment_comment)
+      ) {
+        continue;
+      }
+
+      data[post.platform][comment.sentiment_comment] += 1;
+    }
+  }
+
+  const final_data = [];
+  for (const platform of AVAILABLE_PLATFORMS) {
+    data[platform.key].subject = platform.name;
+    final_data.push(data[platform.key]);
+  }
+
+  return final_data;
+}
 
 export function getPiePlatformDistributionData(
   season,
@@ -109,14 +147,13 @@ export function getPiePlatformDistributionData(
     }
   }
 
-  const final_data = [];
+  const final_data = { subject: "Platform" };
   for (const platform of Object.keys(data)) {
-    const subdata = {
-      name: platforms.find((p) => p.key === platform).name,
-      value: data[platform],
-    };
-
-    final_data.push(subdata);
+    // const subdata = {
+    //   name: platforms.find((p) => p.key === platform).name,
+    //   value: data[platform],
+    // };
+    final_data[platforms.find((p) => p.key === platform).name] = data[platform];
   }
-  return final_data;
+  return [final_data];
 }
