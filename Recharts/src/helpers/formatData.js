@@ -26,6 +26,11 @@ export const AVAILABLE_PLATFORMS = [
   { name: "Web", key: "Web" },
 ];
 
+export const AVAILABLE_SOURCES = posts
+  .map((post) => post.source)
+  .filter((v, i, a) => a.indexOf(v) === i)
+  .sort();
+
 export default function getProcessedPosts() {
   return posts;
 }

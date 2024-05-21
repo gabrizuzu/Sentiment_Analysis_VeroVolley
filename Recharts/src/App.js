@@ -10,6 +10,7 @@ import Downloader from "./components/downloader";
 import {
   AVAILABLE_KEYWORDS,
   AVAILABLE_PLATFORMS,
+  AVAILABLE_SOURCES,
   dataToCSV,
 } from "./helpers/formatData";
 import {
@@ -27,6 +28,7 @@ const App = () => {
   const [platformsTimeline, setPlatformsTimeline] = useState(
     Object.values(AVAILABLE_PLATFORMS).map((p) => p.key)
   );
+  const [sourcesTimeline, setSourcesTimeline] = useState(AVAILABLE_SOURCES);
   const [usePostsTimeline, setUsePostsTimeline] = useState(true);
   const [usePercentageTimeline, setUsePercentageTimeline] = useState(false);
   const [keywordsTimeline, setKeywordsTimeline] = useState([
@@ -43,6 +45,7 @@ const App = () => {
   const timelineData = getTimelineData(
     seasonTimeline,
     platformsTimeline,
+    sourcesTimeline,
     keywordsTimeline,
     usePostsTimeline,
     usePercentageTimeline
@@ -98,7 +101,7 @@ const App = () => {
           </button>
         </div>
       </div>
-      <div style={{ display: "flex", width: "50%", margin: "auto", gap: 50 }}>
+      <div style={{ display: "flex", width: "80%", margin: "auto", gap: 50 }}>
         <select
           value={seasonTimeline}
           onChange={(e) => setSeasonTimeline(e.target.value)}
@@ -123,6 +126,22 @@ const App = () => {
           {AVAILABLE_PLATFORMS.map((p) => (
             <option key={p.key} value={p.key}>
               {p.name}
+            </option>
+          ))}
+        </select>
+        <select
+          value={sourcesTimeline}
+          onChange={(e) =>
+            setSourcesTimeline(
+              Array.from(e.target.selectedOptions, (option) => option.value)
+            )
+          }
+          style={{ width: "100%", fontSize: 26 }}
+          multiple={true}
+        >
+          {AVAILABLE_SOURCES.map((s) => (
+            <option key={s} value={s}>
+              {s}
             </option>
           ))}
         </select>
