@@ -13,10 +13,7 @@ export function getOffensiveData(season, platforms, percentual = false) {
       continue;
     }
     for (const comment of post.comments) {
-      if (
-        comment.sentiment_comment === "negative" &&
-        comment.season === season
-      ) {
+      if (comment.isToxic && comment.season === season) {
         comment.keywords = post.keywords;
         offensiveComments.push(comment);
       }
@@ -47,7 +44,9 @@ export function getOffensiveData(season, platforms, percentual = false) {
 
     let value = count;
     if (percentual) {
-      value = Math.round((count * 100) / totalCountCommentsPerKeyword[keyword]);
+      value =
+        Math.round((count * 10000) / totalCountCommentsPerKeyword[keyword]) /
+        100;
       if (isNaN(value)) {
         value = 0;
       }

@@ -565,19 +565,27 @@ def process_post(post):
         comment_season = f"{date_comm.year-1}/{date_comm.year}"
         if date_comm.month >= seasonStart:
             comment_season = f"{date_comm.year}/{date_comm.year + 1}"
+        new_comment = {
+            "author": author,
+            "giorno": date_comm.day,
+            "mese": date_comm.month,
+            "anno": date_comm.year,
+            "date": date_comm.isoformat(),
+            "season": comment_season,
+            "sentiment_comment": comment["sentiment"],
+            "nr_like": nr_like,
+        }
+        for attr in [
+            "toxicity",
+            "severe_toxicity",
+            "identity_attack",
+            "insult",
+            "isToxic",
+        ]:
+            if attr in comment:
+                new_comment[attr] = comment[attr]
 
-        postSing["comments"].append(
-            {
-                "author": author,
-                "giorno": date_comm.day,
-                "mese": date_comm.month,
-                "anno": date_comm.year,
-                "date": date_comm.isoformat(),
-                "season": comment_season,
-                "sentiment_comment": comment["sentiment"],
-                "nr_like": nr_like,
-            }
-        )
+        postSing["comments"].append(new_comment)
 
     return postSing
 

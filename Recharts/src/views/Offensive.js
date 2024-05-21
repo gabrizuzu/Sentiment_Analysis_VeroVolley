@@ -9,8 +9,10 @@ import { AVAILABLE_KEYWORDS, AVAILABLE_PLATFORMS } from "../helpers/formatData";
 import {
   AreaChartComponent,
   BarChartComponent,
+  InvertedBarChartComponent,
   PieChartComponent,
 } from "../components/graphs";
+import { getOffensiveData } from "../helpers/offensiveData";
 
 const Offensive = () => {
   // all but VeroVolley
@@ -28,16 +30,22 @@ const Offensive = () => {
           <div style={{ display: "flex", justifyContent: "space-between" }}>
             <div>
               <h1>Distribution of sentiment over time</h1>
-              <BarChartComponent
-                data={getTimelineData(
+              <InvertedBarChartComponent
+                data={getOffensiveData(
                   season,
                   AVAILABLE_PLATFORMS.map((p) => p.key),
-                  keywords,
-                  false,
                   false
                 )}
-                ylabel={"Comments %"}
-                height={600}
+                height={300}
+                width={1000}
+              />
+              <InvertedBarChartComponent
+                data={getOffensiveData(
+                  season,
+                  AVAILABLE_PLATFORMS.map((p) => p.key),
+                  true
+                )}
+                height={300}
                 width={1000}
               />
             </div>
