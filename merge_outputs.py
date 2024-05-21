@@ -34,7 +34,10 @@ for post in offensive:
                 continue
             for attr in attrs:
                 posts[post_i]["comments"][elements[comment_hash]][attr] = comment[attr]
-
+            if "isToxic" in comment:
+                posts[post_i]["comments"][elements[comment_hash]]["isToxic"] = comment[
+                    "isToxic"
+                ]
 
 with open("sentiment_output_with_offensives.json", "w") as f:
     json.dump(posts, f, indent=2)
