@@ -241,15 +241,6 @@ const App = () => {
         xAxisLabel="name"
         props={{ title: `Platforms Distribution` }}
         ChartComponent={PieChartComponent}
-        getCustomCSVData={() => {
-          const new_data = { id: 1 };
-          // Data is in the format [{name: "Instagram", value: 10}, ...]
-          // We want to convert it to [{Instagram: 10, ...}]
-          for (const d of piePlatformDistributionData) {
-            new_data[d.name] = d.value;
-          }
-          return dataToCSV([new_data], "id");
-        }}
       />
       <Downloader
         data={getPieSentimentData(
