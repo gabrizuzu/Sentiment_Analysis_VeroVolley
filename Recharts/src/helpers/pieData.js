@@ -1,12 +1,13 @@
 import getProcessedPosts, { AVAILABLE_PLATFORMS } from "./formatData";
 
 export function getPieSentimentData(
-  seasons,
+  season,
   platforms,
   sources,
   keywords,
   usePosts
 ) {
+  console.log("season", season);
   const posts = getProcessedPosts();
   const sentiments = ["positive", "negative", "neutral"];
 
@@ -30,10 +31,7 @@ export function getPieSentimentData(
     }
 
     if (usePosts) {
-      if (
-        !sentiments.includes(post.sentiment_post) ||
-        !seasons.includes(post.season)
-      ) {
+      if (!sentiments.includes(post.sentiment_post) || season != post.season) {
         continue;
       }
       data[post.sentiment_post] += 1;
@@ -42,7 +40,7 @@ export function getPieSentimentData(
       for (const comment of post.comments) {
         if (
           !sentiments.includes(comment.sentiment_comment) ||
-          !seasons.includes(comment.season)
+          season != comment.season
         ) {
           continue;
         }

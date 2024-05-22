@@ -586,6 +586,8 @@ export const PieChartComponent = ({
           return item;
         })
       );
+    } else {
+      setDataToUse(data);
     }
   }, [data, subject]);
   return (
