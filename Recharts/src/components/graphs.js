@@ -25,7 +25,7 @@ export const COLORS = {
   quantity: "#A3A3A3",
   positive: "#20519F",
   negative: "#e14547",
-  neutral: "#A8D9FD",
+  neutral: "#9400D3", // viola scuro = #9400D3
   VeroVolley: "#20519F",
   Sylla: "#8884d8",
   Orro: "#82ca9d",
@@ -34,17 +34,18 @@ export const COLORS = {
   Larson: "#ff0000",
   Facebook: "#1877F2",
   Instagram: "#de3ab7",
-  Web: "#66CDAA",
+  Web: "#FDB4C9",
   // Use different colors for toxicity, severe_toxicity, identity_attack and insult
   Toxicity: "#e14547",
   Severe_Toxicity: "#20519F",
-  Identity_Attack: "#A8D9FD",
-  Insult: "#8884d8",
+  Identity_Attack: "#9400D3",
+  Insult: "#FDB4C9",
 };
 
 export const getFontSize = (width) => {
   return Math.round((width * 24) / 1000) + 1;
 };
+const fontFamily = "Lexend";
 
 export const formatter = (width) => {
   return (value, entry, index) => {
@@ -53,6 +54,7 @@ export const formatter = (width) => {
         style={{
           color: COLORS[value],
           fontSize: getFontSize(width),
+          fontFamily,
         }}
       >
         {value}
@@ -85,7 +87,8 @@ export const renderCustomizedPieLabel = (width) => {
         fill={COLORS[name]}
         textAnchor={x > cx ? "start" : "end"}
         dominantBaseline="central"
-        fontSize={getFontSize(width) * 2}
+        fontSize={getFontSize(width)}
+        fontFamily={fontFamily}
       >
         {`${value} (${(percent * 100).toFixed(0)}%)`}
       </text>
@@ -173,15 +176,21 @@ export const BarChartComponent = ({
           </linearGradient> */}
           </defs>
           <CartesianGrid vertical={false} strokeDasharray="3 3" />
-          <XAxis dataKey="month" fontSize={getFontSize(width)} />
+          <XAxis
+            dataKey="month"
+            fontSize={getFontSize(width)}
+            fontFamily={fontFamily}
+          />
           <YAxis
             label={{
               value: ylabel,
               angle: -90,
               position: "insideLeft",
               fontSize: getFontSize(width),
+              fontFamily,
             }}
             fontSize={getFontSize(width)}
+            fontFamily={fontFamily}
           />
           <Tooltip />
           <Legend
@@ -257,16 +266,22 @@ export const AreaChartComponent = ({
             </linearGradient>
           </defs>
           <CartesianGrid strokeDasharray="3 3" />
-          <XAxis dataKey="month" fontSize={getFontSize(width)} />
+          <XAxis
+            dataKey="month"
+            fontSize={getFontSize(width)}
+            fontFamily={fontFamily}
+          />
           <YAxis
             label={{
               value: ylabel,
               angle: -90,
               position: "left",
               fontSize: getFontSize(width),
+              fontFamily,
               offset: 10,
             }}
             fontSize={getFontSize(width)}
+            fontFamily={fontFamily}
           />
           <Tooltip />
           <Legend
@@ -348,6 +363,7 @@ export const InvertedBarChartComponent = ({
               angle: 0,
               position: "bottom",
               fontSize: getFontSize(width),
+              fontFamily,
               // offset: 10,
             }}
           />
@@ -363,6 +379,7 @@ export const InvertedBarChartComponent = ({
             dataKey="subject"
             type="category"
             fontSize={getFontSize(width)}
+            fontFamily={fontFamily}
           />
           <Tooltip />
           {/* <Legend
@@ -401,6 +418,7 @@ export const RadarChartComponent = ({
           <PolarAngleAxis
             dataKey="subject"
             fontSize={getFontSize(width) * 1.8}
+            fontFamily={fontFamily}
           />
           <PolarRadiusAxis />
           {/* <Radar
@@ -476,6 +494,7 @@ export const SingleRadarChartComponent = ({
               <PolarAngleAxis
                 dataKey="subject"
                 fontSize={getFontSize(width * 2)}
+                fontFamily={fontFamily}
               />
               <PolarRadiusAxis />
 
@@ -510,6 +529,7 @@ export const SingleRadarChartComponent = ({
           width: "600px",
           height: "50px",
           fontSize: 26,
+          fontFamily,
         }}
         multiple={true}
         size={1}

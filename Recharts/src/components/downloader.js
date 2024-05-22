@@ -29,14 +29,47 @@ export default function Downloader({
   const handleDownload = useCallback(async () => {
     console.log("Downloading...");
     const png = await getPng();
+    console.log("PNG: ", png);
 
-    // Verify that png is not undefined
-    if (png) {
-      // Download with FileSaver
-      FileSaver.saveAs(png, `${name}.png`);
-    } else {
-      console.log("No png found.");
-    }
+    // Remove white background to transparent
+    // png is data:image/png;base64,i...
+    const img = new Image();
+    img.src = png;
+    img.onload = function () {
+      const canvas = document.createElement("canvas");
+      canvas.width = img.width;
+      canvas.height = img.height;
+      const ctx = canvas.getContext("2d");
+      ctx.drawImage(img, 0, 0);
+      const imageData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+      for (let i = 0; i < imageData.data.length; i += 4) {
+        if (
+          imageData.data[i] === 255 &&
+          imageData.data[i + 1] === 255 &&
+          imageData.data[i + 2] === 255
+        ) {
+          // Change white to transparent
+          imageData.data[i + 3] = 0;
+        }
+      }
+      ctx.putImageData(imageData, 0, 0);
+      const newPng = canvas.toDataURL("image/png");
+      // Verify that png is not undefined
+      if (newPng) {
+        // Download with FileSaver
+        FileSaver.saveAs(newPng, `${name}.png`);
+      } else {
+        console.log("No png found.");
+      }
+    };
+
+    // // Verify that png is not undefined
+    // if (png) {
+    //   // Download with FileSaver
+    //   FileSaver.saveAs(png, `${name}.png`);
+    // } else {
+    //   console.log("No png found.");
+    // }
   }, [getPng, name]);
 
   const handleCSVDownload = useCallback(async () => {
