@@ -62,8 +62,14 @@ const Athletes = () => {
               justifyContent: "space-between",
             }}
           >
-            <div>
-              <h1>Distribution of sentiment over time</h1>
+            <h1>Distribution of sentiment over time</h1>
+            <div
+              style={{
+                display: "flex",
+                // flexDirection: "column",
+                justifyContent: "space-around",
+              }}
+            >
               <Downloader
                 data={getTimelineData(
                   season,
