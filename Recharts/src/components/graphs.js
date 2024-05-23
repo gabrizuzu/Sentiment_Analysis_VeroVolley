@@ -404,6 +404,21 @@ export const RadarChartComponent = ({
   height = 400,
   width = "100%",
 }) => {
+  let invertedData = [];
+  if (data.length > 0) {
+    invertedData = Object.keys(data[0])
+      .filter((key) => key !== "subject")
+      .map((key) => {
+        const item = {
+          subject: key,
+        };
+        for (const value of data) {
+          item[value.subject] = value[key];
+        }
+        return item;
+      });
+  }
+
   return (
     <div style={{ border: "1px solid black", width, height }}>
       <ResponsiveContainer width="100%" height="100%">
@@ -412,7 +427,7 @@ export const RadarChartComponent = ({
           cx="50%"
           cy="50%"
           outerRadius="80%"
-          data={data}
+          data={invertedData}
         >
           <PolarGrid />
           <PolarAngleAxis
@@ -421,34 +436,19 @@ export const RadarChartComponent = ({
             fontFamily={fontFamily}
           />
           <PolarRadiusAxis />
-          {/* <Radar
-          name="Neutrality"
-          dataKey="neutral"
-          stroke={COLORS["neutral"]}
-          fill={COLORS["neutral"]}
-          fillOpacity={0.6}
-        /> */}
-          <Radar
-            name="Quantity"
-            dataKey="quantity"
-            stroke={COLORS["quantity"]}
-            fill={COLORS["quantity"]}
-            fillOpacity={0.6}
-          />
-          <Radar
-            name="Positivity"
-            dataKey="positive"
-            stroke={COLORS["positive"]}
-            fill={COLORS["positive"]}
-            fillOpacity={0.6}
-          />
-          <Radar
-            name="Negativity"
-            dataKey="negative"
-            stroke={COLORS["negative"]}
-            fill={COLORS["negative"]}
-            fillOpacity={0.6}
-          />
+          {invertedData.length > 0 &&
+            Object.keys(invertedData[0])
+              .filter((key) => key !== "subject")
+              .map((key) => (
+                <Radar
+                  key={key}
+                  name={key}
+                  dataKey={key}
+                  stroke={COLORS[key]}
+                  fill={COLORS[key]}
+                  fillOpacity={0.6}
+                />
+              ))}
           <Tooltip />
           <Legend
             formatter={formatter(width * 1.8)}
@@ -457,99 +457,6 @@ export const RadarChartComponent = ({
         </RadarChart>
       </ResponsiveContainer>
     </div>
-  );
-};
-
-export const SingleRadarChartComponent = ({
-  data,
-  graphRef,
-  height = 400,
-  width = "100%",
-}) => {
-  const invertedData = ["positive", "negative", "neutral"].map((key) => {
-    const item = {
-      subject: key,
-    };
-    for (const value of data) {
-      item[value.subject] = value[key];
-    }
-    return item;
-  });
-
-  const [names, setNames] = React.useState([data[0].subject]);
-
-  return (
-    <>
-      <div style={{ display: "flex", width: "100%", justifyContent: "center" }}>
-        <div style={{ border: "1px solid black", width, height }}>
-          <ResponsiveContainer width="100%" height="100%">
-            <RadarChart
-              cx="50%"
-              cy="50%"
-              outerRadius="80%"
-              data={invertedData}
-              ref={graphRef}
-            >
-              <PolarGrid />
-              <PolarAngleAxis
-                dataKey="subject"
-                fontSize={getFontSize(width * 2)}
-                fontFamily={fontFamily}
-              />
-              <PolarRadiusAxis />
-
-              {names.map((name) => (
-                <Radar
-                  key={name}
-                  name={name}
-                  dataKey={name}
-                  stroke={COLORS[name]}
-                  fill={COLORS[name]}
-                  fillOpacity={0.6}
-                />
-              ))}
-
-              <Tooltip />
-              <Legend
-                formatter={formatter(width * 2)}
-                iconSize={getFontSize(width)}
-              />
-            </RadarChart>
-          </ResponsiveContainer>
-        </div>
-      </div>
-      <select
-        value={names}
-        onChange={(e) =>
-          setNames(
-            Array.from(e.target.selectedOptions, (option) => option.value)
-          )
-        }
-        style={{
-          width: "600px",
-          height: "50px",
-          fontSize: 26,
-          fontFamily,
-        }}
-        multiple={true}
-        size={1}
-      >
-        {data.map((item) => (
-          <option
-            key={item.subject}
-            value={item.subject}
-            style={{
-              color: COLORS[item.subject],
-              display: "inline-block",
-              width: 100,
-              textAlign: "center",
-            }}
-          >
-            {item.subject}
-          </option>
-        ))}
-      </select>
-    </>
   );
 };
 

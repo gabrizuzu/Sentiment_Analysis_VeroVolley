@@ -1,9 +1,7 @@
 import React, { useEffect, useState } from "react";
 
-import getRadarData from "../helpers/radarData";
 import {
   getPiePlatformDistributionData,
-  getPieSentimentData,
   getPieSentimentDataByPlatforms,
 } from "../helpers/pieData";
 import { getTimelineData } from "../helpers/timelineData";
@@ -20,7 +18,6 @@ import {
   BarChartComponent,
   PieChartComponent,
   RadarChartComponent,
-  SingleRadarChartComponent,
 } from "../components/graphs";
 
 const VeroVolley = () => {

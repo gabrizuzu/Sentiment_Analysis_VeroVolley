@@ -4,12 +4,14 @@ import { AVAILABLE_KEYWORDS, AVAILABLE_PLATFORMS } from "../helpers/formatData";
 import {
   InvertedBarChartComponent,
   PieChartComponent,
+  RadarChartComponent,
 } from "../components/graphs";
 import {
   getOffensiveData,
   getOffensiveDistributionData,
 } from "../helpers/offensiveData";
 import Downloader from "../components/downloader";
+import { getRadarDataSentimentAsCorners } from "../helpers/radarData";
 
 const Offensive = () => {
   // all but VeroVolley
@@ -107,6 +109,20 @@ const Offensive = () => {
                   title: "Toxicity Levels Per Subject: [ONE PER SUBJECT]",
                 }}
                 ChartComponent={PieChartComponent}
+                defaultWidth={400}
+                defaultHeight={272}
+                justCsvDownload={true}
+              />
+              <h2>Sentiment Distribution Per Athlete</h2>
+              <Downloader
+                data={getRadarDataSentimentAsCorners(
+                  [season],
+                  AVAILABLE_PLATFORMS.map((p) => p.key),
+                  false
+                )}
+                name={`Offensive_Radar_${season}`}
+                xAxisLabel="subject"
+                ChartComponent={RadarChartComponent}
                 defaultWidth={400}
                 defaultHeight={272}
                 justCsvDownload={true}
