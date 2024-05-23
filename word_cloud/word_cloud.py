@@ -14,6 +14,9 @@ import nltk
 from nltk.tokenize.toktok import ToktokTokenizer
 from nltk.corpus import stopwords
 
+nltk.download("stopwords")
+nltk.download("wordnet")
+
 
 def basic_clean(string):
     """
@@ -116,9 +119,26 @@ import json
 from collections import defaultdict, Counter
 import matplotlib.colors as mcolors
 
-with open("sentiment_output.json") as f:
+with open("sentiment_output_with_offensives.json") as f:
     posts = json.load(f)
 
+
+source_to_keyword = {
+    "paolaegonu_post": "egonu",
+    "verovolley_alessiaorro8_post_comments_filtered.json": "orro",
+    "verovolley_post_comments_filtered.json": "verovolley",
+    "verovolley_miriamsylla_post_comments_filtered.json": "sylla",
+    "miriamsylla_post": "sylla",
+    "verovolley_crawl": "verovolley",
+    "verovolley_paolaegonu_post_comments_filtered.json": "egonu",
+}
+
+for post in posts:
+    if post["source"] in source_to_keyword:
+        keyword = source_to_keyword[post["source"]]
+        post["keywords"].append(keyword)
+
+    post["keywords"] = list(set(post["keywords"]))
 
 sentiment_colors = {
     "positive": np.array(mcolors.to_rgb("green")),
@@ -130,11 +150,12 @@ print("cleaning text...", end="\r")
 sentiment_text = defaultdict(str)
 for post in posts:
     for comment in post["comments"]:
-        if comment["sentiment"] not in sentiment_colors:
+        sentiment = comment["sentiment"]
+        if sentiment not in sentiment_colors:
             continue
-        if comment["sentiment"] not in sentiment_text:
-            sentiment_text[comment["sentiment"]] = ""
-        sentiment_text[comment["sentiment"]] += comment["text"] + " "
+        if sentiment not in sentiment_text:
+            sentiment_text[sentiment] = ""
+        sentiment_text[sentiment] += comment["text"] + " "
 for sentiment in sentiment_text:
     sentiment_text[sentiment] = clean(sentiment_text[sentiment])
 
