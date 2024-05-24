@@ -115,74 +115,86 @@ const App = () => {
         </div>
       </div>
       <div style={{ display: "flex", width: "80%", margin: "auto", gap: 50 }}>
-        <select
-          value={seasonTimeline}
-          onChange={(e) => setSeasonTimeline(e.target.value)}
-          style={{ width: "100%", fontSize: 26, textAlign: "center" }}
-        >
-          {availableSeasons.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
-        <select
-          value={platformsTimeline}
-          onChange={(e) =>
-            setPlatformsTimeline(
-              Array.from(e.target.selectedOptions, (option) => option.value)
-            )
-          }
-          style={{ width: "100%", fontSize: 26 }}
-          multiple={true}
-        >
-          {AVAILABLE_PLATFORMS.map((p) => (
-            <option key={p.key} value={p.key}>
-              {p.name}
-            </option>
-          ))}
-        </select>
-        <select
-          value={sourcesTimeline}
-          onChange={(e) =>
-            setSourcesTimeline(
-              Array.from(e.target.selectedOptions, (option) => option.value)
-            )
-          }
-          style={{ width: "100%", fontSize: 26 }}
-          multiple={true}
-        >
-          {AVAILABLE_SOURCES.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
-        <select
-          value={keywordsTimeline}
-          onChange={(e) => {
-            const selectedKeywords = Array.from(
-              e.target.selectedOptions,
-              (option) => option.value
-            );
-            const newKeywords = [];
-            for (const keyword of selectedKeywords) {
-              if (AVAILABLE_KEYWORDS[keyword]) {
-                newKeywords.push(...AVAILABLE_KEYWORDS[keyword]);
-              }
-              newKeywords.push(keyword);
+        <div>
+          <h3 style={{ textAlign: "center" }}>Season Filter</h3>
+          <select
+            value={seasonTimeline}
+            onChange={(e) => setSeasonTimeline(e.target.value)}
+            style={{ width: "100%", fontSize: 26, textAlign: "center" }}
+          >
+            {availableSeasons.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <h3 style={{ textAlign: "center" }}>Platforms Filter</h3>
+          <select
+            value={platformsTimeline}
+            onChange={(e) =>
+              setPlatformsTimeline(
+                Array.from(e.target.selectedOptions, (option) => option.value)
+              )
             }
-            setKeywordsTimeline(newKeywords);
-          }}
-          style={{ width: "100%", fontSize: 26 }}
-          multiple={true}
-        >
-          {Object.keys(AVAILABLE_KEYWORDS).map((p) => (
-            <option key={p} value={p}>
-              {p}
-            </option>
-          ))}
-        </select>
+            style={{ width: "100%", fontSize: 26 }}
+            multiple={true}
+          >
+            {AVAILABLE_PLATFORMS.map((p) => (
+              <option key={p.key} value={p.key}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <h3 style={{ textAlign: "center" }}>Sources Filter</h3>
+          <select
+            value={sourcesTimeline}
+            onChange={(e) =>
+              setSourcesTimeline(
+                Array.from(e.target.selectedOptions, (option) => option.value)
+              )
+            }
+            style={{ width: "100%", fontSize: 26 }}
+            multiple={true}
+          >
+            {AVAILABLE_SOURCES.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div>
+          <h3 style={{ textAlign: "center" }}>Keywords Filter</h3>
+          <select
+            value={keywordsTimeline}
+            onChange={(e) => {
+              const selectedKeywords = Array.from(
+                e.target.selectedOptions,
+                (option) => option.value
+              );
+              const newKeywords = [];
+              for (const keyword of selectedKeywords) {
+                if (AVAILABLE_KEYWORDS[keyword]) {
+                  newKeywords.push(...AVAILABLE_KEYWORDS[keyword]);
+                }
+                newKeywords.push(keyword);
+              }
+              setKeywordsTimeline(newKeywords);
+            }}
+            style={{ width: "100%", fontSize: 26 }}
+            multiple={true}
+          >
+            {Object.keys(AVAILABLE_KEYWORDS).map((p) => (
+              <option key={p} value={p}>
+                {p}
+              </option>
+            ))}
+          </select>
+        </div>
         <div
           style={{
             display: "flex",
@@ -190,7 +202,7 @@ const App = () => {
             alignItems: "center",
           }}
         >
-          <label htmlFor="usePercentage">Percentual</label>
+          <label htmlFor="usePercentage">Use Percentual Data?</label>
           <input
             id="usePercentage"
             type="checkbox"
@@ -356,38 +368,44 @@ const App = () => {
         </div>
       </div>
       <div style={{ display: "flex", width: "50%", margin: "auto", gap: 50 }}>
-        <select
-          value={seasonsRadar}
-          onChange={(e) =>
-            setSeasonsRadar(
-              Array.from(e.target.selectedOptions, (option) => option.value)
-            )
-          }
-          style={{ width: "100%", fontSize: 26, textAlign: "center" }}
-          multiple={true}
-        >
-          {availableSeasons.map((s) => (
-            <option key={s} value={s}>
-              {s}
-            </option>
-          ))}
-        </select>
-        <select
-          value={platformsRadar}
-          onChange={(e) =>
-            setPlatformsRadar(
-              Array.from(e.target.selectedOptions, (option) => option.value)
-            )
-          }
-          style={{ width: "100%", fontSize: 26 }}
-          multiple={true}
-        >
-          {AVAILABLE_PLATFORMS.map((p) => (
-            <option key={p.key} value={p.key}>
-              {p.name}
-            </option>
-          ))}
-        </select>
+        <div style={{ width: "100%" }}>
+          <h3 style={{ textAlign: "center" }}>Seasons Filter</h3>
+          <select
+            value={seasonsRadar}
+            onChange={(e) =>
+              setSeasonsRadar(
+                Array.from(e.target.selectedOptions, (option) => option.value)
+              )
+            }
+            style={{ width: "100%", fontSize: 26, textAlign: "center" }}
+            multiple={true}
+          >
+            {availableSeasons.map((s) => (
+              <option key={s} value={s}>
+                {s}
+              </option>
+            ))}
+          </select>
+        </div>
+        <div style={{ width: "100%" }}>
+          <h3 style={{ textAlign: "center" }}>Platforms Filter</h3>
+          <select
+            value={platformsRadar}
+            onChange={(e) =>
+              setPlatformsRadar(
+                Array.from(e.target.selectedOptions, (option) => option.value)
+              )
+            }
+            style={{ width: "100%", fontSize: 26 }}
+            multiple={true}
+          >
+            {AVAILABLE_PLATFORMS.map((p) => (
+              <option key={p.key} value={p.key}>
+                {p.name}
+              </option>
+            ))}
+          </select>
+        </div>
       </div>
       <Downloader
         data={getRadarData(seasonsRadar, platformsRadar, usePostsRadar)}
