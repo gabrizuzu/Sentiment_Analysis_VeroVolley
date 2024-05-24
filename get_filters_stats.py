@@ -11,6 +11,7 @@
 
 import os
 import json
+from official_statistics.sentiment_total import process_post
 
 # Crawl folders to find the files and posts
 FILTER_FOLDER = "filter"
@@ -18,6 +19,10 @@ FILTER_FOLDER = "filter"
 
 def post_to_hash(post):
     return f"{post.get('taken_at_date')}{post.get('date')}{post.get('title')}{post.get('content')}"
+
+
+def comment_to_hash(post_hash, comment):
+    return f"{post_hash}{comment.get('text')}{comment.get('author')}{comment.get('user')}{comment.get('username')}{comment.get('created_at_utc')}{comment.get('date')}"
 
 
 def remove_duplicates(posts):
@@ -28,11 +33,31 @@ def remove_duplicates(posts):
         if post_to_hash(post) not in set_to_skip:
             new_posts.append(post)
             set_to_skip.add(post_to_hash(post))
+            comments = []
+            for comment in post["comments"]:
+                if comment_to_hash(post_to_hash(post), comment) not in set_to_skip:
+                    comments.append(comment)
+                    set_to_skip.add(comment_to_hash(post_to_hash(post), comment))
+            post["comments"] = comments
     return new_posts
 
 
+def filter_seasons(posts):
+    filtered_posts = []
+    for post in posts:
+        processed = process_post(post)
+        comments = []
+        for comment in processed["comments"]:
+            if comment["anno"] > 2021 or comment["season"] == "2021/2022":
+                comments.append(comment)
+        processed["comments"] = comments
+        filtered_posts.append(processed)
+
+    return filtered_posts
+
+
 def get_elements(folder):
-    platform_to_separator = {"FB": "crawl", "IG": "post", "Web": "output"}
+    platform_list = {"FB", "IG", "Web", "Facebook", "web"}
     elements_to_process = []
 
     platforms_folder = f"{FILTER_FOLDER}"
@@ -41,7 +66,7 @@ def get_elements(folder):
 
     platforms = next(os.walk(platforms_folder))[1]
     for platform in platforms:
-        if platform not in platform_to_separator:
+        if platform not in platform_list:
             continue
 
         files_folder = f"{platforms_folder}/{platform}"
@@ -77,6 +102,15 @@ def get_elements(folder):
     return elements_to_process
 
 
+elements = get_elements("data")
+comments = sum(map(lambda x: len(x["comments"]), elements))
+print("Initial Data:")
+print(" Posts:", len(elements))
+print(" Comments:", comments)
+print(" Total:", len(elements) + comments)
+
+print()
+
 elements = get_elements("output")
 comments = sum(map(lambda x: len(x["comments"]), elements))
 print("Static Filter:")
@@ -95,9 +129,10 @@ print(" Total:", len(elements) + comments)
 
 print()
 
-elements = get_elements("data")
+with open("sentiment_output_with_offensives.json") as f:
+    elements = json.load(f)
 comments = sum(map(lambda x: len(x["comments"]), elements))
-print("Initial Data:")
+print("Final data:")
 print(" Posts:", len(elements))
 print(" Comments:", comments)
 print(" Total:", len(elements) + comments)

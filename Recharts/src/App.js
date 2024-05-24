@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 
-import getRadarData from "./helpers/radarData";
+import {
+  RADAR_KEYWORDS,
+  getRadarData,
+  getRadarDataSentimentAsCorners,
+} from "./helpers/radarData";
 import {
   getPiePlatformDistributionData,
   getPieSentimentData,
@@ -18,9 +22,9 @@ import {
   BarChartComponent,
   PieChartComponent,
   RadarChartComponent,
-  SingleRadarChartComponent,
   InvertedBarChartComponent,
   OffensiveRadarChartComponent,
+  COLORS,
 } from "./components/graphs";
 import {
   getOffensiveByPlatformData,
@@ -63,7 +67,8 @@ const App = () => {
     keywordsTimeline,
     usePostsTimeline
   );
-  const radarData = getRadarData(seasonsRadar, platformsRadar, usePostsRadar);
+
+  const [radarNames, setRadarNames] = useState([]);
 
   const [timelineAttrsName, setTimelineAttrsName] = useState("");
   useEffect(() => {
@@ -385,17 +390,62 @@ const App = () => {
         </select>
       </div>
       <Downloader
-        data={radarData}
+        data={getRadarData(seasonsRadar, platformsRadar, usePostsRadar)}
         name={`Radar_${radarAttrsName}`}
         xAxisLabel="subject"
         ChartComponent={RadarChartComponent}
       />
-      <Downloader
-        data={radarData}
-        name={`SingleRadar_${radarAttrsName}`}
-        xAxisLabel="subject"
-        ChartComponent={SingleRadarChartComponent}
-      />
+      <div
+        style={{
+          display: "flex",
+          flexDirection: "column",
+          justifyContent: "center",
+          alignItems: "center",
+        }}
+      >
+        <Downloader
+          data={getRadarDataSentimentAsCorners(
+            seasonsRadar,
+            platformsRadar,
+            usePostsRadar,
+            radarNames
+          )}
+          name={`SingleRadar_${radarAttrsName}`}
+          xAxisLabel="subject"
+          ChartComponent={RadarChartComponent}
+        />
+
+        <select
+          value={radarNames}
+          onChange={(e) =>
+            setRadarNames(
+              Array.from(e.target.selectedOptions, (option) => option.value)
+            )
+          }
+          style={{
+            width: "600px",
+            height: "50px",
+          }}
+          multiple={true}
+          size={1}
+        >
+          {RADAR_KEYWORDS.map((item) => (
+            <option
+              key={item}
+              value={item}
+              style={{
+                color: COLORS[item],
+                display: "inline-block",
+                width: 100,
+                textAlign: "center",
+                fontSize: 30,
+              }}
+            >
+              {item}
+            </option>
+          ))}
+        </select>
+      </div>
     </div>
   );
 };

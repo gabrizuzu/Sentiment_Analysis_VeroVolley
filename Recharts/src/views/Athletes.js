@@ -13,8 +13,13 @@ import {
   countComments,
   countPosts,
 } from "../helpers/formatData";
-import { AreaChartComponent, PieChartComponent } from "../components/graphs";
+import {
+  AreaChartComponent,
+  PieChartComponent,
+  RadarChartComponent,
+} from "../components/graphs";
 import Downloader from "../components/downloader";
+import { getRadarData } from "../helpers/radarData";
 
 const Athletes = () => {
   // all but VeroVolley
@@ -50,9 +55,21 @@ const Athletes = () => {
             <h2>Number of Posts: {countPosts(season, keywords)}</h2>
             <h2>Number of Comments: {countComments(season, keywords)}</h2>
           </div>
-          <div style={{ display: "flex", justifyContent: "space-between" }}>
-            <div>
-              <h1>Distribution of sentiment over time</h1>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "space-between",
+            }}
+          >
+            <h1>Distribution of sentiment over time</h1>
+            <div
+              style={{
+                display: "flex",
+                // flexDirection: "column",
+                justifyContent: "space-around",
+              }}
+            >
               <Downloader
                 data={getTimelineData(
                   season,
@@ -92,7 +109,7 @@ const Athletes = () => {
                 justCsvDownload={true}
               />
             </div>
-            <div style={{ display: "flex", flexDirection: "column" }}>
+            <div style={{ display: "flex", justifyContent: "space-around" }}>
               <Downloader
                 data={getPiePlatformDistributionData(
                   season,
@@ -122,6 +139,22 @@ const Athletes = () => {
                 defaultHeight={272}
                 justCsvDownload={true}
               />
+              <div>
+                <h2>Sentiment Distribution Per Athlete</h2>
+                <Downloader
+                  data={getRadarData(
+                    [season],
+                    AVAILABLE_PLATFORMS.map((p) => p.key),
+                    false
+                  )}
+                  name={`Athletes_Radar_${season}`}
+                  xAxisLabel="subject"
+                  ChartComponent={RadarChartComponent}
+                  defaultWidth={400}
+                  defaultHeight={272}
+                  justCsvDownload={true}
+                />
+              </div>
             </div>
           </div>
         </div>
