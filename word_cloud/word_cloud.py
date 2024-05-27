@@ -925,25 +925,25 @@ sentiment_colors = {
     "neutral": np.array(mcolors.to_rgb("gray")),
 }
 
-# print("cleaning text...", end="\r")
-# sentiment_text = defaultdict(str)
-# for post in posts:
-#     for comment in post["comments"]:
-#         sentiment = comment["sentiment"]
-#         if sentiment not in sentiment_colors:
-#             continue
-#         if sentiment not in sentiment_text:
-#             sentiment_text[sentiment] = ""
-#         sentiment_text[sentiment] += comment["text"] + " "
-# for sentiment in sentiment_text:
-#     sentiment_text[sentiment] = clean(sentiment_text[sentiment])
+print("cleaning text...", end="\r")
+sentiment_text = defaultdict(str)
+for post in posts:
+    for comment in post["comments"]:
+        sentiment = comment["sentiment"]
+        if sentiment not in sentiment_colors:
+            continue
+        if sentiment not in sentiment_text:
+            sentiment_text[sentiment] = ""
+        sentiment_text[sentiment] += comment["text"] + " "
+for sentiment in sentiment_text:
+    sentiment_text[sentiment] = clean(sentiment_text[sentiment])
 
-# sentiment_word_frequencies = {
-#     sentiment: Counter(text.split()) for sentiment, text in sentiment_text.items()
-# }
-# all_frequencies = sum(
-#     (Counter(freq) for freq in sentiment_word_frequencies.values()), Counter()
-# )
+sentiment_word_frequencies = {
+    sentiment: Counter(text.split()) for sentiment, text in sentiment_text.items()
+}
+all_frequencies = sum(
+    (Counter(freq) for freq in sentiment_word_frequencies.values()), Counter()
+)
 
 
 def sentiment_color_func(
@@ -968,7 +968,7 @@ def sentiment_color_func(
     return blended_color_hex
 
 
-# print("cleaning text... done")
+print("cleaning text... done")
 
 # Create mask from jpg black/white image
 from PIL import Image
@@ -977,17 +977,17 @@ ball_mask = np.array(Image.open("word_cloud/ball_mask.jpg"))
 
 from wordcloud import WordCloud
 
-# img = WordCloud(
-#     background_color="white",
-#     width=4096,
-#     height=4096,
-#     mask=ball_mask,
-#     contour_color="black",
-#     contour_width=1,
-# ).generate_from_frequencies(all_frequencies)
-# img.recolor(color_func=sentiment_color_func)
+img = WordCloud(
+    background_color="white",
+    width=4096,
+    height=4096,
+    mask=ball_mask,
+    contour_color="black",
+    contour_width=1,
+).generate_from_frequencies(all_frequencies)
+img.recolor(color_func=sentiment_color_func)
 
-# img.to_file("word_cloud/wordcloud.png")
+img.to_file("word_cloud/wordcloud.png")
 
 
 print("cleaning text...", end="\r")
