@@ -925,25 +925,25 @@ sentiment_colors = {
     "neutral": np.array(mcolors.to_rgb("gray")),
 }
 
-print("cleaning text...", end="\r")
-sentiment_text = defaultdict(str)
-for post in posts:
-    for comment in post["comments"]:
-        sentiment = comment["sentiment"]
-        if sentiment not in sentiment_colors:
-            continue
-        if sentiment not in sentiment_text:
-            sentiment_text[sentiment] = ""
-        sentiment_text[sentiment] += comment["text"] + " "
-for sentiment in sentiment_text:
-    sentiment_text[sentiment] = clean(sentiment_text[sentiment])
+# print("cleaning text...", end="\r")
+# sentiment_text = defaultdict(str)
+# for post in posts:
+#     for comment in post["comments"]:
+#         sentiment = comment["sentiment"]
+#         if sentiment not in sentiment_colors:
+#             continue
+#         if sentiment not in sentiment_text:
+#             sentiment_text[sentiment] = ""
+#         sentiment_text[sentiment] += comment["text"] + " "
+# for sentiment in sentiment_text:
+#     sentiment_text[sentiment] = clean(sentiment_text[sentiment])
 
-sentiment_word_frequencies = {
-    sentiment: Counter(text.split()) for sentiment, text in sentiment_text.items()
-}
-all_frequencies = sum(
-    (Counter(freq) for freq in sentiment_word_frequencies.values()), Counter()
-)
+# sentiment_word_frequencies = {
+#     sentiment: Counter(text.split()) for sentiment, text in sentiment_text.items()
+# }
+# all_frequencies = sum(
+#     (Counter(freq) for freq in sentiment_word_frequencies.values()), Counter()
+# )
 
 
 def sentiment_color_func(
@@ -968,7 +968,7 @@ def sentiment_color_func(
     return blended_color_hex
 
 
-print("cleaning text... done")
+# print("cleaning text... done")
 
 # Create mask from jpg black/white image
 from PIL import Image
@@ -976,6 +976,65 @@ from PIL import Image
 ball_mask = np.array(Image.open("word_cloud/ball_mask.jpg"))
 
 from wordcloud import WordCloud
+
+# img = WordCloud(
+#     background_color="white",
+#     width=4096,
+#     height=4096,
+#     mask=ball_mask,
+#     contour_color="black",
+#     contour_width=1,
+# ).generate_from_frequencies(all_frequencies)
+# img.recolor(color_func=sentiment_color_func)
+
+# img.to_file("word_cloud/wordcloud.png")
+
+
+print("cleaning text...", end="\r")
+sentiment_text = defaultdict(str)
+for post in posts:
+    for comment in post["comments"]:
+        sentiment = comment["sentiment"]
+        if sentiment not in ["positive", "negative"]:
+            continue
+        if sentiment not in sentiment_text:
+            sentiment_text[sentiment] = ""
+
+        sentiment_text[sentiment] += post["title"] + " " + post["content"] + " "
+
+for sentiment in sentiment_text:
+    sentiment_text[sentiment] = clean(sentiment_text[sentiment])
+
+sentiment_word_frequencies = {
+    sentiment: Counter(text.split()) for sentiment, text in sentiment_text.items()
+}
+all_frequencies = sum(
+    (Counter(freq) for freq in sentiment_word_frequencies.values()), Counter()
+)
+print(len(all_frequencies))
+
+
+def posts_sentiment_color_func(
+    word, font_size, position, orientation, random_state=None, **kwargs
+):
+    total_occurrences = sum(
+        sentiment_word_frequencies[sentiment][word]
+        for sentiment in sentiment_word_frequencies
+    )
+
+    # Initialize color components
+    blended_color = np.zeros(3)
+
+    # Blend the colors based on the proportion of occurrences in each sentiment
+    for sentiment, frequencies in sentiment_word_frequencies.items():
+        proportion = frequencies[word] / total_occurrences
+        blended_color += proportion * sentiment_colors[sentiment]
+
+    # Convert the blended color back to a hex color code
+    blended_color_hex = mcolors.to_hex(blended_color)
+
+    return blended_color_hex
+
 
 img = WordCloud(
     background_color="white",
@@ -985,6 +1044,6 @@ img = WordCloud(
     contour_color="black",
     contour_width=1,
 ).generate_from_frequencies(all_frequencies)
-img.recolor(color_func=sentiment_color_func)
+img.recolor(color_func=posts_sentiment_color_func)
 
-img.to_file("word_cloud/wordcloud.png")
+img.to_file("word_cloud/wordcloud_posts.png")
